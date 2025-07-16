@@ -18,7 +18,7 @@ from About_page import about_page
 col1, col2, col3 = st.columns([2, 8, 2])
 
 with col1:
-    st.image("Logo3.png", width=150)
+    st.image("Logo3.png", width=50)
 
 with col2:
     st.markdown("""
