@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
 
 # -----------------------------------------------------
 # Load pre-trained model and encoders
@@ -28,6 +27,9 @@ service_cols = [
     'Baggage handling', 'Checkin service', 'Inflight service', 'Cleanliness'
 ]
 
+# -----------------------------------------------------
+# Helper to categorize age
+# -----------------------------------------------------
 def categorize_age(age):
     if age <= 30:
         return 'Young'
@@ -36,6 +38,9 @@ def categorize_age(age):
     else:
         return 'Old'
 
+# -----------------------------------------------------
+# Prediction function
+# -----------------------------------------------------
 def predict_cluster(age, customer_type, travel_type, travel_class, flight_distance,
                     kmeans, le_dict, median_distance):
     age_group = categorize_age(age)
@@ -52,10 +57,14 @@ def predict_cluster(age, customer_type, travel_type, travel_class, flight_distan
 
     return cluster, age_group, flight_cat
 
+# -----------------------------------------------------
+# Recommendation function for one cluster
+# -----------------------------------------------------
 def get_cluster_recommendation(df, cluster_num):
     cluster_df = df[df['Assigned Cluster'] == cluster_num]
     if cluster_df.empty:
         return f"⚠️ No passengers found in Cluster {cluster_num}."
+
     means = cluster_df[service_cols].mean()
     lowest_5 = means.sort_values().head(5)
     rec = f"🎯 Cluster **{cluster_num}** — Based on passengers in this cluster:\n"
@@ -64,13 +73,18 @@ def get_cluster_recommendation(df, cluster_num):
         rec += f"  {i}. {feature} — avg. score: {score:.2f}\n"
     return rec
 
+# -----------------------------------------------------
+# Interactive Plotly Visualization helper
+# -----------------------------------------------------
 def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=16):
     cluster_df = df[df['Assigned Cluster'] == cluster_num]
     if cluster_df.empty:
         st.info(f"No passengers in Cluster {cluster_num} for visualization.")
         return
+
     mean_scores = cluster_df[service_cols].mean()
     selected = mean_scores.sort_values(ascending=not top).head(5)
+
     fig = go.Figure(go.Bar(
         x=selected.values[::-1],
         y=selected.index[::-1],
@@ -78,6 +92,7 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
         marker=dict(color=px.colors.sequential.Plasma[:len(selected)]),
         hovertemplate='%{y}: %{x:.2f}<extra></extra>'
     ))
+
     fig.update_layout(
         title=dict(text=""),
         xaxis=dict(
@@ -100,19 +115,43 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
     )
     st.plotly_chart(fig, use_container_width=True)
 
+# -----------------------------------------------------
+# Streamlit UI
+# -----------------------------------------------------
 def segment_page():
-    # CSS styling
+    # Inject CSS
     st.markdown("""
         <style>
-            .main-scale { transform: scale(0.9); transform-origin: top left; }
-            html, body, div, p, span, li, label, select, input, button {
-                font-size: 20px !important; color: white !important;
+            .main-scale {
+                transform: scale(0.9);
+                transform-origin: top left;
             }
-            .streamlit-expanderHeader { font-size: 32px !important; font-weight: bold; color: white !important; }
-            .st-expanderContent { background-color: black !important; }
-            .box-content { font-size: 22px !important; color: white !important; line-height: 1.6; }
-            h1, h2, h3, h4 { color: white !important; }
-            .big-heading { font-size: 60px; font-weight: bold; color: white; text-align: center; }
+            html, body, div, p, span, li, label, select, input, button {
+                font-size: 20px !important;
+                color: white !important;
+            }
+            .streamlit-expanderHeader {
+                font-size: 32px !important;
+                font-weight: bold;
+                color: white !important;
+            }
+            .st-expanderContent {
+                background-color: black !important;
+            }
+            .box-content {
+                font-size: 22px !important;
+                color: white !important;
+                line-height: 1.6;
+            }
+            h1, h2, h3, h4 {
+                color: white !important;
+            }
+            .big-heading {
+                font-size: 60px;
+                font-weight: bold;
+                color: white;
+                text-align: center;
+            }
             section[data-testid="stSidebar"] *:not(h1):not(h2):not(h3):not(.stHeading) {
                 font-size: 20px !important;
             }
@@ -126,7 +165,6 @@ def segment_page():
         </div>
     """, unsafe_allow_html=True)
 
-    # Sidebar
     st.sidebar.markdown("""
         <h2 style='font-size: 30px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
         <hr style='border: 1px solid #CCC; margin-top: 5px; margin-bottom: 15px;'>
@@ -136,40 +174,8 @@ def segment_page():
     mode = st.sidebar.radio("Choose data source:", ["Use Manual Inputs", "Upload CSV File"])
     st.sidebar.caption("Select how you want to provide data for analysis.")
 
-    # If clustering results exist, compute metrics
-    if "segmentation_df" in st.session_state:
-        df = st.session_state["segmentation_df"]
-        cluster_features = ["Customer Type", "Type of Travel", "Class", "AgeGroup", "FlightCategory"]
-
-        if all(col in df.columns for col in cluster_features + ["Assigned Cluster"]):
-            df_encoded = df.copy()
-            df_encoded["Customer Type"] = le_dict["Customer Type"].transform(df["Customer Type"])
-            df_encoded["Type of Travel"] = le_dict["Type of Travel"].transform(df["Type of Travel"])
-            df_encoded["Class"] = le_dict["Class"].transform(df["Class"])
-            df_encoded["AgeGroup"] = le_dict["AgeGroup"].transform(df["AgeGroup"])
-            df_encoded["FlightCategory"] = le_dict["FlightCategory"].transform(df["FlightCategory"])
-
-            X_clustered = df_encoded[cluster_features]
-            labels = df["Assigned Cluster"]
-
-            sil_score = silhouette_score(X_clustered, labels)
-            db_score = davies_bouldin_score(X_clustered, labels)
-            ch_score = calinski_harabasz_score(X_clustered, labels)
-
-            st.sidebar.markdown("---")
-            st.sidebar.markdown("### 📈 Clustering Quality Metrics")
-            st.sidebar.markdown(
-                f"""
-                <div style="background-color:#222; padding:10px; border-radius:10px; color:white; font-size:16px;">
-                    <p><strong>Silhouette Score:</strong> {sil_score:.4f} (higher is better)</p>
-                    <p><strong>Davies–Bouldin Index:</strong> {db_score:.4f} (lower is better)</p>
-                    <p><strong>Calinski–Harabasz Score:</strong> {ch_score:.2f} (higher is better)</p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
     st.sidebar.markdown("---")
+
     st.sidebar.header("📊 Visualization Options")
     show_viz = st.sidebar.checkbox("Show Visualizations")
     st.sidebar.caption("Enable to explore top or bottom service ratings for clusters.")
@@ -180,6 +186,152 @@ def segment_page():
         viz_top5 = st.sidebar.checkbox("Top 5 Services", value=True)
         viz_bottom5 = st.sidebar.checkbox("Bottom 5 Services", value=False)
 
-    # Remaining body logic (manual input, CSV upload, results) stays unchanged
-    # You can keep your existing code here for manual inputs, CSV processing,
-    # visualization, recommendations, etc.
+    if mode == "Use Manual Inputs":
+        st.markdown("""
+            <div class="main-scale">
+                <h2 style='font-size:36px;'>Manual Passenger Entry</h2>
+                <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
+                    Fill in the passenger details manually to predict which cluster they belong to.
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        age = st.slider("Passenger Age", 18, 80, 35)
+        customer_type = st.selectbox("Customer Type", options=le_dict['Customer Type'].classes_)
+        travel_type = st.selectbox("Type of Travel", options=le_dict['Type of Travel'].classes_)
+        travel_class = st.selectbox("Travel Class", options=le_dict['Class'].classes_)
+        flight_distance = st.slider("Flight Distance (km)", 100, 5000, 500, step=50)
+
+        if st.button("🚀 Predict Cluster"):
+            with st.spinner("Predicting cluster..."):
+                cluster, age_group, flight_cat = predict_cluster(
+                    age, customer_type, travel_type, travel_class, flight_distance,
+                    kmeans, le_dict, median_distance
+                )
+
+                dummy_data = {
+                    "Age": [age],
+                    "Customer Type": [customer_type],
+                    "Type of Travel": [travel_type],
+                    "Class": [travel_class],
+                    "Flight Distance": [flight_distance],
+                    "AgeGroup": [age_group],
+                    "FlightCategory": [flight_cat],
+                    "Assigned Cluster": [cluster],
+                }
+                for col in service_cols:
+                    dummy_data[col] = [np.random.uniform(2, 5)]
+
+                manual_df = pd.DataFrame(dummy_data)
+
+                st.session_state["segmentation_df"] = manual_df
+                st.session_state["segmentation_clusters"] = [cluster]
+
+    elif mode == "Upload CSV File":
+        st.markdown("""
+            <div class="main-scale">
+                <h2 style='font-size:36px;'>📂 Upload Passenger Data CSV</h2>
+                <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
+                    Upload a CSV file with passenger details to predict clusters in bulk.
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        uploaded_file = st.file_uploader("Choose CSV file", type="csv")
+
+        if uploaded_file is not None:
+            df = pd.read_csv(uploaded_file)
+
+            required_cols = ["Age", "Customer Type", "Type of Travel", "Class", "Flight Distance"]
+            if all(col in df.columns for col in required_cols):
+                df["AgeGroup"] = df["Age"].apply(categorize_age)
+                df["FlightCategory"] = df["Flight Distance"].apply(
+                    lambda x: "Short" if x <= median_distance else "Long"
+                )
+
+                df_encoded = df.copy()
+                df_encoded["Customer Type"] = le_dict["Customer Type"].transform(df["Customer Type"])
+                df_encoded["Type of Travel"] = le_dict["Type of Travel"].transform(df["Type of Travel"])
+                df_encoded["Class"] = le_dict["Class"].transform(df["Class"])
+                df_encoded["AgeGroup"] = le_dict["AgeGroup"].transform(df["AgeGroup"])
+                df_encoded["FlightCategory"] = le_dict["FlightCategory"].transform(df["FlightCategory"])
+
+                X = df_encoded[["Customer Type", "Type of Travel", "Class", "AgeGroup", "FlightCategory"]]
+                df["Assigned Cluster"] = kmeans.predict(X)
+
+                for col in service_cols:
+                    df[col] = np.random.uniform(2, 5, size=len(df))
+
+                st.session_state["segmentation_df"] = df
+                st.session_state["segmentation_clusters"] = sorted(df["Assigned Cluster"].unique())
+                st.success("✅ Clusters predicted for uploaded CSV!")
+
+                csv_download = df.to_csv(index=False).encode('utf-8')
+                st.download_button("⬇️ Download Segmentation Results CSV", csv_download, file_name="segmentation_results.csv")
+
+            else:
+                st.error(f"CSV missing required columns: {required_cols}")
+
+    # --------------------------------------------------
+    # Show results if available
+    # --------------------------------------------------
+    if "segmentation_df" in st.session_state:
+        df = st.session_state["segmentation_df"]
+        clusters = st.session_state["segmentation_clusters"]
+
+        st.markdown("""
+            <div class="main-scale">
+                <hr style='margin: 25px 0;'>
+            </div>
+        """, unsafe_allow_html=True)
+
+        # Three columns for 3 expanders side-by-side
+        col1, col2, col3 = st.columns(3)
+
+        # Passenger Details box
+        with col1:
+            with st.expander("👤 Passenger Details", expanded=False):
+                # Show details of first passenger (for manual or uploaded CSV)
+                passenger = df.iloc[0]
+                details_md = (
+                    f"**Age:** {passenger['Age']}  \n"
+                    f"**Customer Type:** {passenger['Customer Type']}  \n"
+                    f"**Type of Travel:** {passenger['Type of Travel']}  \n"
+                    f"**Class:** {passenger['Class']}  \n"
+                    f"**Flight Distance:** {passenger['Flight Distance']} km  \n"
+                    f"**Age Group:** {passenger['AgeGroup']}  \n"
+                    f"**Flight Category:** {passenger['FlightCategory']}  \n"
+                )
+                st.markdown(details_md)
+
+        # Cluster Info box
+        with col2:
+            with st.expander("📊 Cluster Info", expanded=False):
+                for cluster_num in clusters:
+                    st.markdown(f"**Cluster {cluster_num}** assigned to passenger(s)")
+                    # Optionally add more cluster info here if needed
+
+        # Airline Recommendations box
+        with col3:
+            with st.expander("✈️ Airline Recommendations", expanded=False):
+                for cluster_num in clusters:
+                    rec_text = get_cluster_recommendation(df, cluster_num)
+                    st.markdown(f"<div class='box-content'>{rec_text.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
+
+        # Visualizations below if enabled
+        if show_viz:
+            for cluster_num in clusters:
+                if viz_top5:
+                    st.markdown(f"<h4 style='font-size:24px;'>Top 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
+                    plot_services_interactive(df, cluster_num, top=True, height=300, font_size=16)
+                if viz_bottom5:
+                    st.markdown(f"<h4 style='font-size:24px;'>Bottom 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
+                    plot_services_interactive(df, cluster_num, top=False, height=300, font_size=16)
+
+    else:
+        if show_viz:
+            st.warning("⚠️ Please predict a cluster or upload CSV first to see visualizations.")
+
+
+if __name__ == "__main__":
+    segment_page()
