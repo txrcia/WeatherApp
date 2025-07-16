@@ -86,15 +86,15 @@ def home_page():
         unsafe_allow_html=True
     )
 
-    # HERO SECTION
     st.markdown("""
-        <div class="hero">
-            <h1>✈️ SkySatisfy</h1>
-            <p>
-                Your AI co-pilot for passenger satisfaction. Analyze, predict, and improve airline services with data-driven insights.
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+    <div class="hero">
+        <h1 style="font-size: 30px;">✈️ SkySatisfy</h1>
+        <p>
+            Your AI co-pilot for passenger satisfaction. Analyze, predict, and improve airline services with data-driven insights.
+        </p>
+    </div>
+""", unsafe_allow_html=True)
+
 
     # SHORT ABOUT SECTION
     st.markdown("""

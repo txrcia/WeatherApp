@@ -1,5 +1,61 @@
 import streamlit as st
-st.set_page_config(page_title="SkySatisfy - Airline Satisfaction AI", layout="wide")
+
+# --------------------------------------------------------
+# PAGE CONFIG
+# --------------------------------------------------------
+st.set_page_config(
+    page_title="SkySatisfy - Airline Satisfaction AI",
+    layout="wide"
+)
+
+# --------------------------------------------------------
+# GLOBAL STYLING
+# --------------------------------------------------------
+st.markdown("""
+    <style>
+        html, body, [data-testid="stApp"] {
+            font-size: 14px !important;
+        }
+
+        /* Reduce overall page zoom slightly for a smaller look */
+        [data-testid="stApp"] {
+            zoom: 90%;
+            margin: 0 auto;
+            max-width: 1400px;
+        }
+
+        /* Center main content area */
+        .block-container {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 1200px;
+        }
+
+        /* Sidebar font sizes */
+        section[data-testid="stSidebar"] {
+            font-size: 16px !important;
+        }
+        
+        /* Smaller expander headers */
+        .streamlit-expanderHeader {
+            font-size: 16px !important;
+        }
+
+        /* Smaller DataFrame text */
+        .stDataFrame th, .stDataFrame td {
+            font-size: 12px !important;
+        }
+
+        /* Reduce the header logo/title size */
+        h1 {
+            font-size: 36px !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# --------------------------------------------------------
+# REST OF YOUR APP
+# --------------------------------------------------------
 
 from navigation import custom_navigation
 from Home_Page import home_page
@@ -8,25 +64,11 @@ from Segment_Page import segment_page
 from About_page import about_page
 
 # --- Header Section: Logo Left, Title Centered ---
-st.markdown("""
-    <style>
-        html, body, [data-testid="stApp"] {
-            zoom: 97%;
-        }
-
-        /* Center the main app container */
-        [data-testid="stAppViewContainer"] > .main {
-            margin-left: auto;
-            margin-right: auto;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 
 col1, col2, col3 = st.columns([2, 8, 2])
 
 with col1:
-    st.image("Logo3.png", width=280)
+    st.image("Logo3.png", width=200)
 
 with col2:
     st.markdown("""
@@ -37,22 +79,21 @@ with col2:
             height: 100%;
         ">
             <h1 style="
-                font-size: 64px;
+                font-size: 36px;
                 font-weight: bold;
                 color: white;
                 text-shadow: 2px 2px 5px black;
                 margin: 0;
             ">
-                SkySatisfy 
+                SkySatisfy
             </h1>
         </div>
     """, unsafe_allow_html=True)
 
-# Right column stays empty
 with col3:
     st.empty()
 
-# --- Navigation and page rendering ---
+# --- Navigation and Page Rendering ---
 
 pages = {
     "main": "🏠 Home",

@@ -99,21 +99,40 @@ def satisfaction_prediction_page():
     # ------------------------------
     # Page Title
     # ------------------------------
-    st.markdown("<h1 class='big-heading'>😊 Passenger Satisfaction Prediction</h1>", unsafe_allow_html=True)
-    st.markdown("<hr style='border: 1px solid #DDD;'>", unsafe_allow_html=True)
+    st.markdown("""
+    <h1 style='
+        font-size: 37px;
+        font-weight: bold;
+        text-align: center;
+        color: white;
+    '>
+        😊 Passenger Satisfaction Prediction
+    </h1>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<hr style='border: 0.5px solid #DDD;'>", unsafe_allow_html=True)
 
     # ------------------------------
     # Sidebar
     # ------------------------------
 
+    # Smaller sidebar heading:
     st.sidebar.markdown("""
-        <h2 style='font-size: 30px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
+        <hr style='border: 1px solid #CCC; margin-top: 50px; margin-bottom: 1px;'>
+        <h2 style='font-size: 25px; margin-top: 5px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
         <hr style='border: 1px solid #CCC; margin-top: 5px; margin-bottom: 15px;'>
     """, unsafe_allow_html=True)
 
-    st.sidebar.header("🧾 Data Input Method")
+    # Smaller sub-heading:
+    st.sidebar.markdown(
+        "<h3 style='font-size: 23px;'>🧾 Data Input Method</h3>",
+        unsafe_allow_html=True
+    )
+
+    # Radio and caption
     mode = st.sidebar.radio("Choose data source:", ["Use Manual Inputs", "Upload CSV File"])
     st.sidebar.caption("Select how you want to provide data for analysis.")
+
     st.sidebar.markdown("---")
 
     # ------------------------------
