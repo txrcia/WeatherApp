@@ -1,19 +1,5 @@
 import streamlit as st
-
-st.set_page_config(
-    page_title="SkySatisfy - Airline Satisfaction AI",
-    layout="wide"
-)
-
-# --- Scaling CSS ---
-st.markdown("""
-    <style>
-    .app-scale {
-        transform: scale(0.70);
-        transform-origin: top left;
-    }
-    </style>
-""", unsafe_allow_html=True)
+st.set_page_config(page_title="SkySatisfy - Airline Satisfaction AI", layout="wide")
 
 from navigation import custom_navigation
 from Home_Page import home_page
@@ -21,10 +7,22 @@ from satisfaction_page import satisfaction_prediction_page
 from Segment_Page import segment_page
 from About_page import about_page
 
-# --- Begin scaled container ---
-st.markdown('<div class="app-scale">', unsafe_allow_html=True)
+# --- Header Section: Logo Left, Title Centered ---
+st.markdown("""
+    <style>
+        html, body, [data-testid="stApp"] {
+            zoom: 97%;
+        }
 
-# --- Header Section ---
+        /* Center the main app container */
+        [data-testid="stAppViewContainer"] > .main {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+
 col1, col2, col3 = st.columns([2, 8, 2])
 
 with col1:
@@ -45,15 +43,17 @@ with col2:
                 text-shadow: 2px 2px 5px black;
                 margin: 0;
             ">
-                SkySatisfy
+                SkySatisfy 
             </h1>
         </div>
     """, unsafe_allow_html=True)
 
+# Right column stays empty
 with col3:
     st.empty()
 
-# --- Navigation ---
+# --- Navigation and page rendering ---
+
 pages = {
     "main": "🏠 Home",
     "satisfaction": "😊 Satisfaction Prediction",
@@ -71,6 +71,3 @@ elif current_page == "segment":
     segment_page()
 elif current_page == "about":
     about_page()
-
-# --- Close scaled container ---
-st.markdown("</div>", unsafe_allow_html=True)
