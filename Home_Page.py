@@ -8,27 +8,28 @@ def home_page():
             .hero {
                 background: linear-gradient(90deg, #6a11cb, #2575fc);
                 color: white;
-                padding: 50px 20px;
+                padding: 30px 15px;
                 border-radius: 10px;
                 text-align: center;
-                margin-bottom: 40px;
+                margin-bottom: 30px;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             }
             .hero h1 {
-                font-size: 60px;
+                font-size: 40px;
                 font-weight: bold;
+                margin-bottom: 10px;
             }
             .hero p {
-                font-size: 22px;
-                margin-top: 15px;
+                font-size: 16px;
+                margin-top: 10px;
                 opacity: 0.9;
             }
             .cta-button {
                 background-color: white;
                 color: #6a11cb;
                 font-weight: bold;
-                padding: 12px 24px;
-                font-size: 18px;
+                padding: 8px 16px;
+                font-size: 14px;
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
@@ -40,45 +41,47 @@ def home_page():
             .feature-card {
                 background-color: #222;
                 color: white;
-                padding: 20px;
+                padding: 15px;
                 border-radius: 8px;
                 height: 100%;
                 transition: transform 0.2s;
+                font-size: 15px;
+                line-height: 1.4;
             }
             .feature-card:hover {
                 transform: scale(1.02);
             }
             .feature-title {
-                font-size: 24px;
+                font-size: 18px;
                 font-weight: bold;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
                 color: #9c27b0;
             }
             .about-box {
                 background-color: #333;
                 color: white;
-                padding: 30px;
+                padding: 20px;
                 border-radius: 10px;
-                margin-top: 30px;
-                font-size: 20px;
-                line-height: 1.6;
+                margin-top: 20px;
+                font-size: 15px;
+                line-height: 1.5;
             }
             .purple-black-box {
                 background: linear-gradient(90deg, purple, black);
                 color: white;
-                padding: 20px;
+                padding: 15px;
                 border-radius: 10px;
-                margin-bottom: 20px;
-                font-size: 18px;
+                margin-bottom: 15px;
+                font-size: 15px;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             }
             .blue-black-box {
                 background: linear-gradient(90deg, royalblue, black);
                 color: white;
-                padding: 20px;
+                padding: 15px;
                 border-radius: 10px;
-                margin-bottom: 20px;
-                font-size: 18px;
+                margin-bottom: 15px;
+                font-size: 15px;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             }
         </style>
@@ -88,13 +91,12 @@ def home_page():
 
     st.markdown("""
     <div class="hero">
-        <h1 style="font-size: 30px;">✈️ SkySatisfy</h1>
+        <h1>✈️ SkySatisfy</h1>
         <p>
             Your AI co-pilot for passenger satisfaction. Analyze, predict, and improve airline services with data-driven insights.
         </p>
     </div>
-""", unsafe_allow_html=True)
-
+    """, unsafe_allow_html=True)
 
     # SHORT ABOUT SECTION
     st.markdown("""

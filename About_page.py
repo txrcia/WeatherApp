@@ -5,57 +5,63 @@ def about_page():
         <style>
             .about-hero {
                 background: linear-gradient(90deg, #6a11cb, #2575fc);
-                padding: 50px 20px;
+                padding: 40px 20px;
                 border-radius: 10px;
                 text-align: center;
                 color: white;
-                margin-bottom: 40px;
+                margin-bottom: 30px;
             }
             .about-hero h1 {
-                font-size: 64px;
+                font-size: 48px;
                 font-weight: bold;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
             .about-hero p {
-                font-size: 24px;
-                margin-top: 10px;
+                font-size: 18px;
+                margin-top: 8px;
                 opacity: 0.9;
             }
             .about-section {
                 background: #222;
-                padding: 30px;
+                padding: 25px;
                 border-radius: 10px;
-                margin-bottom: 30px;
+                margin-bottom: 25px;
                 color: #fff;
-                font-size: 20px;
+                font-size: 16px;
                 line-height: 1.6;
             }
             .about-section h2 {
                 color: #ff4081;
-                font-size: 32px;
-                margin-bottom: 20px;
+                font-size: 24px;
+                margin-bottom: 15px;
             }
             .feature-box {
                 background: linear-gradient(90deg, #9c27b0, #673ab7);
-                padding: 20px;
+                padding: 15px;
                 border-radius: 8px;
-                margin-bottom: 20px;
+                margin-bottom: 15px;
                 color: white;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                font-size: 15px;
             }
             .feature-box h3 {
                 margin-top: 0;
-                margin-bottom: 10px;
-                font-size: 26px;
+                margin-bottom: 8px;
+                font-size: 20px;
             }
             .vision-box {
                 background: linear-gradient(90deg, #ff9800, #ff5722);
-                padding: 25px;
+                padding: 20px;
                 border-radius: 10px;
-                margin-top: 30px;
+                margin-top: 25px;
                 color: white;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                font-size: 20px;
+                font-size: 16px;
+            }
+            .vision-box h2 {
+                font-size: 22px;
+                margin-bottom: 12px;
+                color: white;
             }
         </style>
     """, unsafe_allow_html=True)

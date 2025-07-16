@@ -59,49 +59,42 @@ df_train, X, y, categorical_cols = load_data()
 
 def satisfaction_prediction_page():
 
-    # ------------------------------
-    # Global Styling
-    # ------------------------------
     st.markdown("""
-        <style>
-            html, body, div, p, span, label, select, input, button {
-                font-size: 20px !important;
-                color: white !important;
-            }
-            .big-heading {
-                font-size: 50px;
-                font-weight: bold;
-                text-align: center;
-                color: white;
-            }
-            .description-box {
-                background-color: #444444;
-                padding: 15px;
-                border-radius: 10px;
-                color: white;
-                font-size: 20px;
-                margin-bottom: 20px;
-            }
-            .result-box {
-                background-color: #222222;
-                padding: 20px;
-                border-radius: 10px;
-                margin-top: 20px;
-                font-size: 24px;
-                color: white;
-            }
-            .st-expanderContent {
-                background-color: #222222 !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
+    <style>
+        .big-heading {
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+        }
+        .description-box {
+            background-color: #444444;
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+        .result-box {
+            background-color: #222222;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 18px;
+            color: white;
+        }
+        .st-expanderContent {
+            background-color: #222222 !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
     # ------------------------------
     # Page Title
     # ------------------------------
     st.markdown("""
     <h1 style='
-        font-size: 37px;
+        font-size: 30px;
         font-weight: bold;
         text-align: center;
         color: white;
@@ -116,24 +109,18 @@ def satisfaction_prediction_page():
     # Sidebar
     # ------------------------------
 
-    # Smaller sidebar heading:
     st.sidebar.markdown("""
         <hr style='border: 1px solid #CCC; margin-top: 50px; margin-bottom: 1px;'>
-        <h2 style='font-size: 25px; margin-top: 5px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
+        <h2 style='font-size: 23px; margin-top: 5px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
         <hr style='border: 1px solid #CCC; margin-top: 5px; margin-bottom: 15px;'>
     """, unsafe_allow_html=True)
 
-    # Smaller sub-heading:
-    st.sidebar.markdown(
-        "<h3 style='font-size: 23px;'>🧾 Data Input Method</h3>",
-        unsafe_allow_html=True
-    )
-
-    # Radio and caption
+    st.sidebar.header("🧾 Data Input Methods")
     mode = st.sidebar.radio("Choose data source:", ["Use Manual Inputs", "Upload CSV File"])
     st.sidebar.caption("Select how you want to provide data for analysis.")
 
     st.sidebar.markdown("---")
+
 
     # ------------------------------
     # Description Box
@@ -155,7 +142,6 @@ def satisfaction_prediction_page():
         with st.form("manual_input_form"):
             user_data = {}
 
-            # Identify service ratings columns
             service_cols = [
                 'Inflight wifi service',
                 'Departure/Arrival time convenient',
@@ -188,7 +174,6 @@ def satisfaction_prediction_page():
                     )
                     user_data[feature] = val
                 else:
-                    # numeric but not rating → slider
                     max_val = float(df_train[feature].quantile(0.99)) + 20
                     default_val = float(df_train[feature].median())
                     val = st.slider(
@@ -213,7 +198,7 @@ def satisfaction_prediction_page():
                 </div>
             """, unsafe_allow_html=True)
 
-            # Show feature importance
+            # Feature importance
             feature_importances = model.feature_importances_
             feat_df = pd.DataFrame({
                 'Feature': X.columns,
@@ -234,7 +219,7 @@ def satisfaction_prediction_page():
                 plot_bgcolor='black',
                 paper_bgcolor='black',
                 font=dict(color='white'),
-                height=500
+                height=400
             )
             st.plotly_chart(fig2, use_container_width=True)
 
@@ -248,7 +233,6 @@ def satisfaction_prediction_page():
         if uploaded_file:
             df_uploaded = pd.read_csv(uploaded_file)
 
-            # Drop unnecessary columns if present
             drop_cols = ['Unnamed: 0', 'id', 'satisfaction']
             df_uploaded = df_uploaded.drop(columns=[col for col in drop_cols if col in df_uploaded.columns], errors='ignore')
 
@@ -258,12 +242,10 @@ def satisfaction_prediction_page():
             if missing_cols:
                 st.error(f"❌ Missing required columns:\n{missing_cols}")
             else:
-                # Encode categorical columns
                 for col in categorical_cols:
                     le = label_encoders[col]
                     df_uploaded[col] = le.transform(df_uploaded[col])
 
-                # Ensure same order of columns
                 df_uploaded = df_uploaded[X.columns]
 
                 preds = model.predict(df_uploaded)
@@ -273,7 +255,6 @@ def satisfaction_prediction_page():
                     1: "Satisfied"
                 })
 
-                # Download button
                 csv_out = df_uploaded.to_csv(index=False).encode('utf-8')
                 st.download_button(
                     "⬇️ Download Predictions CSV",
@@ -281,7 +262,6 @@ def satisfaction_prediction_page():
                     file_name="satisfaction_predictions.csv"
                 )
 
-                # Compute summary counts
                 summary_counts = df_uploaded["Predicted Satisfaction Label"].value_counts()
                 num_satisfied = summary_counts.get("Satisfied", 0)
                 num_dissatisfied = summary_counts.get("Neutral or Dissatisfied", 0)
@@ -296,10 +276,8 @@ def satisfaction_prediction_page():
 
                 st.markdown("<br><br>", unsafe_allow_html=True)
 
-                # Show preview
                 st.dataframe(df_uploaded.head())
 
-                # Show feature importance
                 feature_importances = model.feature_importances_
                 feat_df = pd.DataFrame({
                     'Feature': X.columns,
@@ -320,10 +298,11 @@ def satisfaction_prediction_page():
                     plot_bgcolor='black',
                     paper_bgcolor='black',
                     font=dict(color='white'),
-                    height=500
+                    height=400
                 )
                 st.plotly_chart(fig, use_container_width=True)
 
 
 if __name__ == "__main__":
     satisfaction_prediction_page()
+

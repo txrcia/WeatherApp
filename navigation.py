@@ -20,7 +20,7 @@ def custom_navigation(pages):
         text-decoration: none !important;
         border-radius: 8px;
         font-weight: 700;
-        font-size: 18px;
+        font-size: 15px;
         transition: all 0.3s ease;
         cursor: pointer;
         border: 2px solid transparent;
