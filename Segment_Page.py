@@ -203,29 +203,28 @@ def segment_page():
         flight_distance = st.slider("Flight Distance (km)", 100, 5000, 500, step=50)
 
         if st.button("🚀 Predict Cluster"):
-            with st.spinner("Predicting cluster..."):
-                cluster, age_group, flight_cat = predict_cluster(
-                    age, customer_type, travel_type, travel_class, flight_distance,
-                    kmeans, le_dict, median_distance
-                )
+            cluster, age_group, flight_cat = predict_cluster(
+                age, customer_type, travel_type, travel_class, flight_distance,
+                kmeans, le_dict, median_distance
+            )
 
-                dummy_data = {
-                    "Age": [age],
-                    "Customer Type": [customer_type],
-                    "Type of Travel": [travel_type],
-                    "Class": [travel_class],
-                    "Flight Distance": [flight_distance],
-                    "AgeGroup": [age_group],
-                    "FlightCategory": [flight_cat],
-                    "Assigned Cluster": [cluster],
-                }
-                for col in service_cols:
-                    dummy_data[col] = [np.random.uniform(2, 5)]
+            dummy_data = {
+                "Age": [age],
+                "Customer Type": [customer_type],
+                "Type of Travel": [travel_type],
+                "Class": [travel_class],
+                "Flight Distance": [flight_distance],
+                "AgeGroup": [age_group],
+                "FlightCategory": [flight_cat],
+                "Assigned Cluster": [cluster],
+            }
+            for col in service_cols:
+                dummy_data[col] = [np.random.uniform(2, 5)]
 
-                manual_df = pd.DataFrame(dummy_data)
+            manual_df = pd.DataFrame(dummy_data)
 
-                st.session_state["segmentation_df"] = manual_df
-                st.session_state["segmentation_clusters"] = [cluster]
+            st.session_state["segmentation_df"] = manual_df
+            st.session_state["segmentation_clusters"] = [cluster]
 
     elif mode == "Upload CSV File":
         st.markdown("""
@@ -285,42 +284,15 @@ def segment_page():
             </div>
         """, unsafe_allow_html=True)
 
-        # Three columns for 3 expanders side-by-side
-        col1, col2, col3 = st.columns(3)
+        st.dataframe(df)
 
-        # Passenger Details box
-        with col1:
-            with st.expander("👤 Passenger Details", expanded=False):
-                # Show details of first passenger (for manual or uploaded CSV)
-                passenger = df.iloc[0]
-                details_md = (
-                    f"**Age:** {passenger['Age']}  \n"
-                    f"**Customer Type:** {passenger['Customer Type']}  \n"
-                    f"**Type of Travel:** {passenger['Type of Travel']}  \n"
-                    f"**Class:** {passenger['Class']}  \n"
-                    f"**Flight Distance:** {passenger['Flight Distance']} km  \n"
-                    f"**Age Group:** {passenger['AgeGroup']}  \n"
-                    f"**Flight Category:** {passenger['FlightCategory']}  \n"
-                )
-                st.markdown(details_md)
+        st.markdown("<h2 style='font-size: 36px;'>🛫 Airline Recommendations</h2>", unsafe_allow_html=True)
+        for cluster_num in clusters:
+            with st.expander(f"Recommendations for Cluster {cluster_num}", expanded=False):
+                rec_text = get_cluster_recommendation(df, cluster_num)
+                st.markdown(f"<div class='box-content'>{rec_text.replace('\n', '<br>')}</div>", unsafe_allow_html=True)
 
-        # Cluster Info box
-        with col2:
-            with st.expander("📊 Cluster Info", expanded=False):
-                for cluster_num in clusters:
-                    st.markdown(f"**Cluster {cluster_num}** assigned to passenger(s)")
-                    # Optionally add more cluster info here if needed
-
-        # Airline Recommendations box
-        with col3:
-            with st.expander("✈️ Airline Recommendations", expanded=False):
-                for cluster_num in clusters:
-                    rec_text = get_cluster_recommendation(df, cluster_num)
-                    st.markdown(f"<div class='box-content'>{rec_text.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
-
-        # Visualizations below if enabled
-        if show_viz:
-            for cluster_num in clusters:
+            if show_viz:
                 if viz_top5:
                     st.markdown(f"<h4 style='font-size:24px;'>Top 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
                     plot_services_interactive(df, cluster_num, top=True, height=300, font_size=16)
