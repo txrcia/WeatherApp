@@ -91,7 +91,8 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
             return
 
         n_bars = len(selected)
-        colors = px.colors.sequential.Plasma[-n_bars:][::-1] if n_bars > 1 else ["#636efa"] * n_bars
+        # 🔵🟣 Blue & Purple shades
+        colors = ['#5B9BD5', '#6A5ACD', '#4B0082', '#9370DB', '#483D8B'][:n_bars][::-1]
 
         fig = go.Figure(go.Bar(
             x=selected.values[::-1],
@@ -116,6 +117,7 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
         st.error(f"❌ Plotly crashed: {e}")
         import traceback
         st.text(traceback.format_exc())
+
 
 # -----------------------------------------------------
 # Streamlit UI
