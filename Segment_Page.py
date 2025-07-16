@@ -85,11 +85,17 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
     mean_scores = cluster_df[service_cols].mean()
     selected = mean_scores.sort_values(ascending=not top).head(5)
 
+    # Fix the color problem:
+    # We must pass either a single color, or a list matching the bars.
+    colors = px.colors.sequential.Plasma[-len(selected):][::-1]
+
     fig = go.Figure(go.Bar(
         x=selected.values[::-1],
         y=selected.index[::-1],
         orientation='h',
-        marker=dict(color=px.colors.sequential.Plasma[:len(selected)]),
+        marker=dict(
+            color=colors
+        ),
         hovertemplate='%{y}: %{x:.2f}<extra></extra>'
     ))
 
@@ -122,10 +128,6 @@ def segment_page():
     # Inject CSS
     st.markdown("""
         <style>
-            .main-scale {
-                transform: scale(0.9);
-                transform-origin: top left;
-            }
             html, body, div, p, span, li, label, select, input, button {
                 font-size: 15px !important;
                 color: white !important;
@@ -174,7 +176,6 @@ def segment_page():
     # ------------------------------
     # Sidebar
     # ------------------------------
-
     st.sidebar.markdown("""
         <hr style='border: 1px solid #CCC; margin-top: 50px; margin-bottom: 1px;'>
         <h2 style='font-size: 23px; margin-top: 5px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
@@ -184,7 +185,6 @@ def segment_page():
     st.sidebar.header("🧾 Data Input Methods")
     mode = st.sidebar.radio("Choose data source:", ["Use Manual Inputs", "Upload CSV File"])
     st.sidebar.caption("Select how you want to provide data for analysis.")
-
     st.sidebar.markdown("---")
 
     st.sidebar.header("📊 Visualization Options")
@@ -199,11 +199,9 @@ def segment_page():
 
     if mode == "Use Manual Inputs":
         st.markdown("""
-            <div class="main-scale">
-                <h2 style='font-size:30px;'>Manual Passenger Entry</h2>
-                <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
-                    Fill in the passenger details manually to predict which cluster they belong to.
-                </div>
+            <h2 style='font-size:30px;'>Manual Passenger Entry</h2>
+            <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
+                Fill in the passenger details manually to predict which cluster they belong to.
             </div>
         """, unsafe_allow_html=True)
 
@@ -240,11 +238,9 @@ def segment_page():
 
     elif mode == "Upload CSV File":
         st.markdown("""
-            <div class="main-scale">
-                <h2 style='font-size:36px;'>📂 Upload Passenger Data CSV</h2>
-                <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
-                    Upload a CSV file with passenger details to predict clusters in bulk.
-                </div>
+            <h2 style='font-size:36px;'>📂 Upload Passenger Data CSV</h2>
+            <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
+                Upload a CSV file with passenger details to predict clusters in bulk.
             </div>
         """, unsafe_allow_html=True)
 
@@ -290,11 +286,7 @@ def segment_page():
         df = st.session_state["segmentation_df"]
         clusters = st.session_state["segmentation_clusters"]
 
-        st.markdown("""
-            <div class="main-scale">
-                <hr style='margin: 25px 0;'>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown("<hr style='margin: 25px 0;'>", unsafe_allow_html=True)
 
         col1, col2, col3 = st.columns(3)
 
@@ -331,7 +323,6 @@ def segment_page():
                 if viz_bottom5:
                     st.markdown(f"<h4 style='font-size:24px;'>Bottom 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
                     plot_services_interactive(df, cluster_num, top=False, height=300, font_size=16)
-
     else:
         if show_viz:
             st.warning("⚠️ Please predict a cluster or upload CSV first to see visualizations.")
