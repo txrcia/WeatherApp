@@ -191,7 +191,7 @@ def segment_page():
         viz_top5 = st.sidebar.checkbox("Top 5 Services", value=True)
         viz_bottom5 = st.sidebar.checkbox("Bottom 5 Services", value=False)
 
-    # clear state if switching between modes
+    # Clear state if switching modes
     if "prev_mode" not in st.session_state:
         st.session_state["prev_mode"] = mode
     if st.session_state["prev_mode"] != mode:
@@ -309,14 +309,23 @@ def segment_page():
 
             with col2:
                 with st.expander("📊 Cluster Info", expanded=False):
-                    for cluster_num in clusters:
-                        st.markdown(f"**Cluster {cluster_num}** assigned to passenger(s)")
+                    cluster_num = clusters[0]
+                    st.markdown(f"**Cluster {cluster_num}** assigned to passenger")
 
             with col3:
                 with st.expander("✈️ Airline Recommendations", expanded=False):
-                    for cluster_num in clusters:
-                        rec_text = get_cluster_recommendation(df, cluster_num)
-                        st.markdown(f"<div class='box-content'>{rec_text.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
+                    cluster_num = clusters[0]
+                    rec_text = get_cluster_recommendation(df, cluster_num)
+                    st.markdown(f"<div class='box-content'>{rec_text.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
+
+                if show_viz:
+                    cluster_num = clusters[0]
+                    if viz_top5:
+                        st.markdown(f"<h4 style='font-size:24px;'>Top 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
+                        plot_services_interactive(df, cluster_num, top=True, height=300, font_size=16)
+                    if viz_bottom5:
+                        st.markdown(f"<h4 style='font-size:24px;'>Bottom 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
+                        plot_services_interactive(df, cluster_num, top=False, height=300, font_size=16)
 
         elif mode == "Upload CSV File":
             with col1:
