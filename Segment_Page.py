@@ -77,43 +77,45 @@ def get_cluster_recommendation(df, cluster_num):
 # Interactive Plotly Visualization helper
 # -----------------------------------------------------
 def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=16):
-    cluster_df = df[df['Assigned Cluster'] == cluster_num]
-    if cluster_df.empty:
-        st.info(f"No passengers in Cluster {cluster_num} for visualization.")
-        return
+    try:
+        cluster_df = df[df['Assigned Cluster'] == cluster_num]
+        if cluster_df.empty:
+            st.info(f"No passengers in Cluster {cluster_num} for visualization.")
+            return
 
-    mean_scores = cluster_df[service_cols].mean()
-    selected = mean_scores.sort_values(ascending=not top).head(5)
+        mean_scores = cluster_df[service_cols].mean()
+        selected = mean_scores.sort_values(ascending=not top).head(5)
 
-    fig = go.Figure(go.Bar(
-        x=selected.values[::-1],
-        y=selected.index[::-1],
-        orientation='h',
-        marker=dict(color=px.colors.sequential.Plasma[:len(selected)]),
-        hovertemplate='%{y}: %{x:.2f}<extra></extra>'
-    ))
+        if selected.empty:
+            st.warning(f"No service data available for Cluster {cluster_num}. Cannot plot.")
+            return
 
-    fig.update_layout(
-        title=dict(text=""),
-        xaxis=dict(
-            title='Average Satisfaction Score',
-            range=[0, 5],
-            gridcolor='gray',
-            tickfont=dict(size=font_size, color='white'),
-            titlefont=dict(size=font_size+2, color='white')
-        ),
-        yaxis=dict(
-            title='Service Feature',
-            tickfont=dict(size=font_size, color='white'),
-            titlefont=dict(size=font_size+2, color='white')
-        ),
-        plot_bgcolor='black',
-        paper_bgcolor='black',
-        font=dict(color='white'),
-        margin=dict(l=90, r=20, t=40, b=30),
-        height=height
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        n_bars = len(selected)
+        colors = px.colors.sequential.Plasma[-n_bars:][::-1] if n_bars > 1 else ["#636efa"] * n_bars
+
+        fig = go.Figure(go.Bar(
+            x=selected.values[::-1],
+            y=selected.index[::-1],
+            orientation='h',
+            marker=dict(color=colors),
+            hovertemplate='%{y}: %{x:.2f}<extra></extra>'
+        ))
+
+        fig.update_layout(
+            xaxis=dict(range=[0, 5]),
+            height=height,
+            margin=dict(l=90, r=20, t=40, b=30),
+            paper_bgcolor='black',
+            plot_bgcolor='black',
+            font=dict(color='white', size=font_size)
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+    except Exception as e:
+        st.error(f"❌ Plotly crashed: {e}")
+        import traceback
+        st.text(traceback.format_exc())
 
 # -----------------------------------------------------
 # Streamlit UI
