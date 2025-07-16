@@ -85,8 +85,11 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
     mean_scores = cluster_df[service_cols].mean()
     selected = mean_scores.sort_values(ascending=not top).head(5)
 
-    n_bars = len(selected)
+    if selected.empty:
+        st.warning(f"No service data available for Cluster {cluster_num}. Cannot plot.")
+        return
 
+    n_bars = len(selected)
     if n_bars > 1:
         colors = px.colors.sequential.Plasma[-n_bars:][::-1]
     else:
@@ -96,9 +99,7 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
         x=selected.values[::-1],
         y=selected.index[::-1],
         orientation='h',
-        marker=dict(
-            color=colors
-        ),
+        marker=dict(color=colors),
         hovertemplate='%{y}: %{x:.2f}<extra></extra>'
     ))
 
@@ -122,6 +123,9 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
         margin=dict(l=90, r=20, t=40, b=30),
         height=height
     )
+
+    st.plotly_chart(fig, use_container_width=True)
+
     st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------------------------------
