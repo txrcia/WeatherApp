@@ -77,59 +77,61 @@ def get_cluster_recommendation(df, cluster_num):
 # Interactive Plotly Visualization helper
 # -----------------------------------------------------
 def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=16):
-    try:
-        cluster_df = df[df['Assigned Cluster'] == cluster_num]
-        if cluster_df.empty:
-            st.info(f"No passengers in Cluster {cluster_num} for visualization.")
-            return
+    cluster_df = df[df['Assigned Cluster'] == cluster_num]
+    if cluster_df.empty:
+        st.info(f"No passengers in Cluster {cluster_num} for visualization.")
+        return
 
-        mean_scores = cluster_df[service_cols].mean()
-        selected = mean_scores.sort_values(ascending=not top).head(5)
+    mean_scores = cluster_df[service_cols].mean()
+    selected = mean_scores.sort_values(ascending=not top).head(5)
 
-        if selected.empty:
-            st.warning(f"No service data available for Cluster {cluster_num}. Cannot plot.")
-            return
+    fig = go.Figure(go.Bar(
+        x=selected.values[::-1],
+        y=selected.index[::-1],
+        orientation='h',
+        marker=dict(color=px.colors.sequential.Plasma[:len(selected)]),
+        hovertemplate='%{y}: %{x:.2f}<extra></extra>'
+    ))
 
-        n_bars = len(selected)
-        colors = px.colors.sequential.Plasma[-n_bars:][::-1] if n_bars > 1 else ["#636efa"] * n_bars
-
-        fig = go.Figure(go.Bar(
-            x=selected.values[::-1],
-            y=selected.index[::-1],
-            orientation='h',
-            marker=dict(color=colors),
-            hovertemplate='%{y}: %{x:.2f}<extra></extra>'
-        ))
-
-        fig.update_layout(
-            xaxis=dict(range=[0, 5]),
-            height=height,
-            margin=dict(l=90, r=20, t=40, b=30),
-            paper_bgcolor='black',
-            plot_bgcolor='black',
-            font=dict(color='white', size=font_size)
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
-    except Exception as e:
-        st.error(f"❌ Plotly crashed: {e}")
-        import traceback
-        st.text(traceback.format_exc())
+    fig.update_layout(
+        title=dict(text=""),
+        xaxis=dict(
+            title='Average Satisfaction Score',
+            range=[0, 5],
+            gridcolor='gray',
+            tickfont=dict(size=font_size, color='white'),
+            titlefont=dict(size=font_size+2, color='white')
+        ),
+        yaxis=dict(
+            title='Service Feature',
+            tickfont=dict(size=font_size, color='white'),
+            titlefont=dict(size=font_size+2, color='white')
+        ),
+        plot_bgcolor='black',
+        paper_bgcolor='black',
+        font=dict(color='white'),
+        margin=dict(l=90, r=20, t=40, b=30),
+        height=height
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------------------------------
 # Streamlit UI
 # -----------------------------------------------------
 def segment_page():
-    # CSS
+    # Inject CSS
     st.markdown("""
         <style>
+            .main-scale {
+                transform: scale(0.9);
+                transform-origin: top left;
+            }
             html, body, div, p, span, li, label, select, input, button {
-                font-size: 15px !important;
+                font-size: 20px !important;
                 color: white !important;
             }
             .streamlit-expanderHeader {
-                font-size: 28px !important;
+                font-size: 32px !important;
                 font-weight: bold;
                 color: white !important;
             }
@@ -137,48 +139,41 @@ def segment_page():
                 background-color: black !important;
             }
             .box-content {
-                font-size: 16px !important;
+                font-size: 22px !important;
                 color: white !important;
-                line-height: 1.5;
+                line-height: 1.6;
             }
             h1, h2, h3, h4 {
                 color: white !important;
             }
             .big-heading {
-                font-size: 50px;
+                font-size: 60px;
                 font-weight: bold;
                 color: white;
                 text-align: center;
             }
             section[data-testid="stSidebar"] *:not(h1):not(h2):not(h3):not(.stHeading) {
-                font-size: 15px !important;
+                font-size: 20px !important;
             }
         </style>
     """, unsafe_allow_html=True)
 
     st.markdown("""
-    <h1 style='
-        font-size: 37px;
-        font-weight: bold;
-        text-align: center;
-        color: white;
-    '>
-        👥 Passenger Segmentation
-    </h1>
+        <div class="main-scale">
+            <h1 class='big-heading'>👥 Passenger Segmentation</h1>
+            <hr style='border: 1px solid #DDD;'>
+        </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<hr style='border: 0.5px solid #DDD;'>", unsafe_allow_html=True)
-
-    # Sidebar
     st.sidebar.markdown("""
-        <hr style='border: 1px solid #CCC; margin-top: 50px; margin-bottom: 1px;'>
-        <h2 style='font-size: 23px; margin-top: 5px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
+        <h2 style='font-size: 30px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
         <hr style='border: 1px solid #CCC; margin-top: 5px; margin-bottom: 15px;'>
     """, unsafe_allow_html=True)
 
-    st.sidebar.header("🧾 Data Input Methods")
-    mode = st.sidebar.radio("Choose data source:", ["Use Manual Inputs", "Upload CSV File"], key="data_mode")
+    st.sidebar.header("🧾 Data Input Method")
+    mode = st.sidebar.radio("Choose data source:", ["Use Manual Inputs", "Upload CSV File"])
     st.sidebar.caption("Select how you want to provide data for analysis.")
+
     st.sidebar.markdown("---")
 
     st.sidebar.header("📊 Visualization Options")
@@ -191,19 +186,13 @@ def segment_page():
         viz_top5 = st.sidebar.checkbox("Top 5 Services", value=True)
         viz_bottom5 = st.sidebar.checkbox("Bottom 5 Services", value=False)
 
-    # clear state if switching between modes
-    if "prev_mode" not in st.session_state:
-        st.session_state["prev_mode"] = mode
-    if st.session_state["prev_mode"] != mode:
-        st.session_state["prev_mode"] = mode
-        st.session_state.pop("segmentation_df", None)
-        st.session_state.pop("segmentation_clusters", None)
-
     if mode == "Use Manual Inputs":
         st.markdown("""
-            <h2 style='font-size:30px;'>Manual Passenger Entry</h2>
-            <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
-                Fill in the passenger details manually to predict which cluster they belong to.
+            <div class="main-scale">
+                <h2 style='font-size:36px;'>Manual Passenger Entry</h2>
+                <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
+                    Fill in the passenger details manually to predict which cluster they belong to.
+                </div>
             </div>
         """, unsafe_allow_html=True)
 
@@ -214,35 +203,36 @@ def segment_page():
         flight_distance = st.slider("Flight Distance (km)", 100, 5000, 500, step=50)
 
         if st.button("🚀 Predict Cluster"):
-            with st.spinner("Predicting cluster..."):
-                cluster, age_group, flight_cat = predict_cluster(
-                    age, customer_type, travel_type, travel_class, flight_distance,
-                    kmeans, le_dict, median_distance
-                )
+            cluster, age_group, flight_cat = predict_cluster(
+                age, customer_type, travel_type, travel_class, flight_distance,
+                kmeans, le_dict, median_distance
+            )
 
-                dummy_data = {
-                    "Age": [age],
-                    "Customer Type": [customer_type],
-                    "Type of Travel": [travel_type],
-                    "Class": [travel_class],
-                    "Flight Distance": [flight_distance],
-                    "AgeGroup": [age_group],
-                    "FlightCategory": [flight_cat],
-                    "Assigned Cluster": [cluster],
-                }
-                for col in service_cols:
-                    dummy_data[col] = [np.random.uniform(2, 5)]
+            dummy_data = {
+                "Age": [age],
+                "Customer Type": [customer_type],
+                "Type of Travel": [travel_type],
+                "Class": [travel_class],
+                "Flight Distance": [flight_distance],
+                "AgeGroup": [age_group],
+                "FlightCategory": [flight_cat],
+                "Assigned Cluster": [cluster],
+            }
+            for col in service_cols:
+                dummy_data[col] = [np.random.uniform(2, 5)]
 
-                manual_df = pd.DataFrame(dummy_data)
+            manual_df = pd.DataFrame(dummy_data)
 
-                st.session_state["segmentation_df"] = manual_df
-                st.session_state["segmentation_clusters"] = [cluster]
+            st.session_state["segmentation_df"] = manual_df
+            st.session_state["segmentation_clusters"] = [cluster]
 
     elif mode == "Upload CSV File":
         st.markdown("""
-            <h2 style='font-size:36px;'>📂 Upload Passenger Data CSV</h2>
-            <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
-                Upload a CSV file with passenger details to predict clusters in bulk.
+            <div class="main-scale">
+                <h2 style='font-size:36px;'>📂 Upload Passenger Data CSV</h2>
+                <div style='background-color: #444444; color: rgba(255,255,255,0.7); padding: 10px 15px; border-radius: 8px; margin-top: 8px; font-size: 18px;'>
+                    Upload a CSV file with passenger details to predict clusters in bulk.
+                </div>
             </div>
         """, unsafe_allow_html=True)
 
@@ -288,62 +278,32 @@ def segment_page():
         df = st.session_state["segmentation_df"]
         clusters = st.session_state["segmentation_clusters"]
 
-        st.markdown("<hr style='margin: 25px 0;'>", unsafe_allow_html=True)
+        st.markdown("""
+            <div class="main-scale">
+                <hr style='margin: 25px 0;'>
+            </div>
+        """, unsafe_allow_html=True)
 
-        col1, col2, col3 = st.columns(3)
+        st.dataframe(df)
 
-        if mode == "Use Manual Inputs":
-            with col1:
-                with st.expander("👤 Passenger Details", expanded=False):
-                    passenger = df.iloc[0]
-                    details_md = (
-                        f"**Age:** {passenger['Age']}  \n"
-                        f"**Customer Type:** {passenger['Customer Type']}  \n"
-                        f"**Type of Travel:** {passenger['Type of Travel']}  \n"
-                        f"**Class:** {passenger['Class']}  \n"
-                        f"**Flight Distance:** {passenger['Flight Distance']} km  \n"
-                        f"**Age Group:** {passenger['AgeGroup']}  \n"
-                        f"**Flight Category:** {passenger['FlightCategory']}  \n"
-                    )
-                    st.markdown(details_md)
+        st.markdown("<h2 style='font-size: 36px;'>🛫 Airline Recommendations</h2>", unsafe_allow_html=True)
+        for cluster_num in clusters:
+            with st.expander(f"Recommendations for Cluster {cluster_num}", expanded=False):
+                rec_text = get_cluster_recommendation(df, cluster_num)
+                st.markdown(f"<div class='box-content'>{rec_text.replace('\n', '<br>')}</div>", unsafe_allow_html=True)
 
-            with col2:
-                with st.expander("📊 Cluster Info", expanded=False):
-                    for cluster_num in clusters:
-                        st.markdown(f"**Cluster {cluster_num}** assigned to passenger(s)")
-
-            with col3:
-                with st.expander("✈️ Airline Recommendations", expanded=False):
-                    for cluster_num in clusters:
-                        rec_text = get_cluster_recommendation(df, cluster_num)
-                        st.markdown(f"<div class='box-content'>{rec_text.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
-
-        elif mode == "Upload CSV File":
-            with col1:
-                with st.expander("📊 Cluster Info", expanded=True):
-                    cluster_counts = df["Assigned Cluster"].value_counts().sort_index()
-                    for cluster_num, count in cluster_counts.items():
-                        st.markdown(f"**Cluster {cluster_num}:** {count} passengers")
-
-            with col2:
-                with st.expander("✈️ Airline Recommendations", expanded=True):
-                    for cluster_num in clusters:
-                        rec_text = get_cluster_recommendation(df, cluster_num)
-                        st.markdown(f"<div class='box-content'>{rec_text.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
-
-            with col3:
-                if show_viz:
-                    for cluster_num in clusters:
-                        if viz_top5:
-                            st.markdown(f"<h4 style='font-size:24px;'>Top 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
-                            plot_services_interactive(df, cluster_num, top=True, height=300, font_size=16)
-                        if viz_bottom5:
-                            st.markdown(f"<h4 style='font-size:24px;'>Bottom 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
-                            plot_services_interactive(df, cluster_num, top=False, height=300, font_size=16)
+            if show_viz:
+                if viz_top5:
+                    st.markdown(f"<h4 style='font-size:24px;'>Top 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
+                    plot_services_interactive(df, cluster_num, top=True, height=300, font_size=16)
+                if viz_bottom5:
+                    st.markdown(f"<h4 style='font-size:24px;'>Bottom 5 Services - Cluster {cluster_num}</h4>", unsafe_allow_html=True)
+                    plot_services_interactive(df, cluster_num, top=False, height=300, font_size=16)
 
     else:
         if show_viz:
             st.warning("⚠️ Please predict a cluster or upload CSV first to see visualizations.")
+
 
 if __name__ == "__main__":
     segment_page()
