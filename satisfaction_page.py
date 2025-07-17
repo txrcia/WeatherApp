@@ -268,7 +268,7 @@ def satisfaction_prediction_page():
         if uploaded_file:
             df_uploaded = pd.read_csv(uploaded_file)
 
-            drop_cols = ['Unnamed: 0', 'id', 'satisfaction']
+            drop_cols = ['Unnamed: 0', 'id', 'satisfaction','Gender']
             df_uploaded = df_uploaded.drop(columns=[col for col in drop_cols if col in df_uploaded.columns], errors='ignore')
 
             required_cols = list(X.columns)
