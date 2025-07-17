@@ -184,22 +184,27 @@ def satisfaction_prediction_page():
                         )
                     elif feature == "Flight Distance":
                         val = st.slider(
-                            "**Flight Distance**",
+                            "**Flight Distance (km)**",
                             min_value=100,
                             max_value=5000,
                             value=1000,
                             step=10
                         )
+                    elif feature == "Departure Delay":
+                        user_data[feature] = st.number_input(
+                            feature, 
+                            min_value=0, 
+                            max_value=300, 
+                            value=0
+                            )
+                    elif feature == "Arrival Delay":
+                        user_data[feature] = st.number_input(
+                            feature, 
+                            min_value=0, 
+                            max_value=300, 
+                            value=0)
                     else:
-                        max_val = float(df_train[feature].quantile(0.99)) + 20
-                        default_val = float(df_train[feature].median())
-                        val = st.slider(
-                            f"**{feature}**", 
-                            min_value=0.0,
-                            max_value=max_val,
-                            value=default_val,
-                            step=1.0
-                        )
+                        user_data[feature] = st.slider(feature, float(df_train[feature].min()), float(df_train[feature].max()))
                     user_data[feature] = val
 
 
