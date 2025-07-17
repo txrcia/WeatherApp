@@ -191,24 +191,19 @@ def satisfaction_prediction_page():
                             step=10
                         )
                     elif feature == "Departure Delay":
-                        val = st.number_input(
-                            "**Departure Delay (minutes)**",
-                            min_value=0,
-                            max_value=300,
-                            value=0,
-                            step=1
-                        )
-                        user_data[feature] = val
+                        user_data[feature] = st.slider(
+                            feature, 
+                            min_value=0, 
+                            max_value=300, 
+                            value=0
+                            )
                     elif feature == "Arrival Delay":
-                        val = st.number_input(
-                            "**Arrival Delay (minutes)**",
-                            min_value=0,
-                            max_value=300,
-                            value=0,
-                            step=1
-                        )
-                        user_data[feature] = val
-
+                        user_data[feature] = st.slider(
+                            feature, 
+                            min_value=0, 
+                            max_value=300, 
+                            value=0)
+                    user_data[feature] = val
 
 
             submitted = st.form_submit_button("🚀 Predict")
