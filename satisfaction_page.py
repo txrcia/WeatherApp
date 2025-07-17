@@ -29,8 +29,9 @@ def load_data():
     df_train = pd.read_csv("train.csv")
 
     # Drop unused columns
-    drop_cols = ['Unnamed: 0', 'id']
+    drop_cols = ['Unnamed: 0', 'id', 'Gender']
     df_train.drop(columns=[col for col in drop_cols if col in df_train.columns], inplace=True)
+
 
     # Fill missing values
     df_train['Arrival Delay in Minutes'].fillna(0, inplace=True)
