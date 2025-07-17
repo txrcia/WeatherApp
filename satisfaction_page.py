@@ -203,9 +203,7 @@ def satisfaction_prediction_page():
                             min_value=0, 
                             max_value=300, 
                             value=0)
-                    else:
-                        user_data[feature] = st.slider(feature, float(df_train[feature].min()), float(df_train[feature].max()))
-                    user_data[feature] = val
+
 
 
             submitted = st.form_submit_button("🚀 Predict")
