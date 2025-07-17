@@ -196,9 +196,9 @@ def satisfaction_prediction_page():
 
                     elif feature == "Departure Delay":
                         val = st.slider(
-                            "**Departure Delay (minutes)**", 
-                            min_value=0, 
-                            max_value=300, 
+                            "**Departure Delay (minutes)**",
+                            min_value=0,
+                            max_value=2000,
                             value=0,
                             step=1
                         )
@@ -206,17 +206,14 @@ def satisfaction_prediction_page():
 
                     elif feature == "Arrival Delay":
                         val = st.slider(
-                            "**Arrival Delay (minutes)**", 
-                            min_value=0, 
-                            max_value=300, 
+                            "**Arrival Delay (minutes)**",
+                            min_value=0,
+                            max_value=2000,
                             value=0,
                             step=1
                         )
                         user_data[feature] = val
 
-                    else:
-                        val = st.slider(feature, float(df_train[feature].min()), float(df_train[feature].max()))
-                        user_data[feature] = val
 
 
 
