@@ -174,16 +174,34 @@ def satisfaction_prediction_page():
                     )
                     user_data[feature] = val
                 else:
-                    max_val = float(df_train[feature].quantile(0.99)) + 20
-                    default_val = float(df_train[feature].median())
-                    val = st.slider(
-                        f"**{feature}**", 
-                        min_value=0.0,
-                        max_value=max_val,
-                        value=default_val,
-                        step=1.0
-                    )
+                    if feature == "Age":
+                        val = st.slider(
+                            "**Age**", 
+                            min_value=18,
+                            max_value=80,
+                            value=30,
+                            step=1
+                        )
+                    elif feature == "Flight Distance":
+                        val = st.slider(
+                            "**Flight Distance**",
+                            min_value=100,
+                            max_value=5000,
+                            value=1000,
+                            step=10
+                        )
+                    else:
+                        max_val = float(df_train[feature].quantile(0.99)) + 20
+                        default_val = float(df_train[feature].median())
+                        val = st.slider(
+                            f"**{feature}**", 
+                            min_value=0.0,
+                            max_value=max_val,
+                            value=default_val,
+                            step=1.0
+                        )
                     user_data[feature] = val
+
 
             submitted = st.form_submit_button("🚀 Predict")
 
