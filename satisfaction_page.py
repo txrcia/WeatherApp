@@ -182,6 +182,8 @@ def satisfaction_prediction_page():
                             value=35,
                             step=1
                         )
+                        user_data[feature] = val
+
                     elif feature == "Flight Distance":
                         val = st.slider(
                             "**Flight Distance (km)**",
@@ -190,20 +192,32 @@ def satisfaction_prediction_page():
                             value=1000,
                             step=10
                         )
+                        user_data[feature] = val
+
                     elif feature == "Departure Delay":
-                        user_data[feature] = st.slider(
-                            feature, 
+                        val = st.slider(
+                            "**Departure Delay (minutes)**", 
                             min_value=0, 
                             max_value=300, 
-                            value=0
-                            )
+                            value=0,
+                            step=1
+                        )
+                        user_data[feature] = val
+
                     elif feature == "Arrival Delay":
-                        user_data[feature] = st.slider(
-                            feature, 
+                        val = st.slider(
+                            "**Arrival Delay (minutes)**", 
                             min_value=0, 
                             max_value=300, 
-                            value=0)
-                    user_data[feature] = val
+                            value=0,
+                            step=1
+                        )
+                        user_data[feature] = val
+
+                    else:
+                        val = st.slider(feature, float(df_train[feature].min()), float(df_train[feature].max()))
+                        user_data[feature] = val
+
 
 
             submitted = st.form_submit_button("🚀 Predict")
