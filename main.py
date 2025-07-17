@@ -48,6 +48,7 @@ pages = {
     "main": "🏠 Home",
     "satisfaction": "😊 Satisfaction Prediction",
     "segment": "👥 Passenger Segmentation",
+    "forecast": "📈 Forecast",
     "about": "ℹ️ About SkySatisfy"
 }
 
