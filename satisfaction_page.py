@@ -28,22 +28,18 @@ model, label_encoders = load_model_and_encoders()
 def load_data():
     df_train = pd.read_csv("train.csv")
 
-    # Drop unused columns
     drop_cols = ['Unnamed: 0', 'id']
     df_train.drop(columns=[col for col in drop_cols if col in df_train.columns], inplace=True)
 
-    # Fill missing values
     df_train['Arrival Delay in Minutes'].fillna(0, inplace=True)
 
-    # Encode categorical columns
     categorical_cols = df_train.select_dtypes(include=['object']).columns.tolist()
-    categorical_cols.remove('satisfaction')  # keep target separate
+    categorical_cols.remove('satisfaction')
 
     for col in categorical_cols:
         le = label_encoders[col]
         df_train[col] = le.transform(df_train[col])
 
-    # Encode target
     df_train['satisfaction'] = df_train['satisfaction'].map({'neutral or dissatisfied': 0, 'satisfied': 1})
 
     X = df_train.drop('satisfaction', axis=1)
@@ -89,9 +85,6 @@ def satisfaction_prediction_page():
     </style>
 """, unsafe_allow_html=True)
 
-    # ------------------------------
-    # Page Title
-    # ------------------------------
     st.markdown("""
     <h1 style='
         font-size: 30px;
@@ -105,10 +98,6 @@ def satisfaction_prediction_page():
 
     st.markdown("<hr style='border: 0.5px solid #DDD;'>", unsafe_allow_html=True)
 
-    # ------------------------------
-    # Sidebar
-    # ------------------------------
-
     st.sidebar.markdown("""
         <hr style='border: 1px solid #CCC; margin-top: 50px; margin-bottom: 1px;'>
         <h2 style='font-size: 23px; margin-top: 5px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
@@ -118,13 +107,7 @@ def satisfaction_prediction_page():
     st.sidebar.header("🧾 Data Input Methods")
     mode = st.sidebar.radio("Choose data source:", ["Use Manual Inputs", "Upload CSV File"])
     st.sidebar.caption("Select how you want to provide data for analysis.")
-
     st.sidebar.markdown("---")
-
-
-    # ------------------------------
-    # Description Box
-    # ------------------------------
 
     st.markdown("""
         <div class="description-box">
@@ -133,10 +116,6 @@ def satisfaction_prediction_page():
             <strong>Neutral/Dissatisfied</strong>.
         </div>
     """, unsafe_allow_html=True)
-
-    # ------------------------------
-    # Manual Input
-    # ------------------------------
 
     if mode == "Use Manual Inputs":
         with st.form("manual_input_form"):
@@ -160,59 +139,14 @@ def satisfaction_prediction_page():
             ]
 
             for feature in X.columns:
-                if feature in categorical_cols:
-                    le = label_encoders[feature]
-                    options = list(le.classes_)
-                    selected = st.selectbox(f"**{feature}**", options=options)
-                    encoded_value = le.transform([selected])[0]
-                    user_data[feature] = encoded_value
-                elif feature in service_cols:
-                    val = st.select_slider(
-                        f"**{feature}** (1 = Poor, 5 = Excellent)",
-                        options=[1, 2, 3, 4, 5],
-                        value=3
-                    )
+                if feature == "Departure Delay in Minutes":
+                    val = st.slider("**Departure Delay (minutes)**", 0, 2000, 0, step=1)
+                    user_data[feature] = val
+                elif feature == "Arrival Delay in Minutes":
+                    val = st.slider("**Arrival Delay (minutes)**", 0, 2000, 0, step=1)
                     user_data[feature] = val
                 else:
-                    if feature == "Age":
-                        val = st.slider(
-                            "**Age**", 
-                            min_value=0,
-                            max_value=90,
-                            value=35,
-                            step=1
-                        )
-                        user_data[feature] = val
-
-                    elif feature == "Flight Distance":
-                        val = st.slider(
-                            "**Flight Distance (km)**",
-                            min_value=100,
-                            max_value=5000,
-                            value=1000,
-                            step=10
-                        )
-                        user_data[feature] = val
-
-                    elif feature == "Departure Delay":
-                        val = st.slider(
-                            "**Departure Delay (minutes)**",
-                            min_value=0,
-                            max_value=2000,
-                            value=0,
-                            step=1
-                        )
-                        user_data[feature] = val
-
-                    elif feature == "Arrival Delay":
-                        val = st.slider(
-                            "**Arrival Delay (minutes)**",
-                            min_value=0,
-                            max_value=2000,
-                            value=0,
-                            step=1
-                        )
-                        user_data[feature] = val
+                    continue  # Do not show other fields
 
             submitted = st.form_submit_button("🚀 Predict")
 
@@ -227,7 +161,6 @@ def satisfaction_prediction_page():
                 </div>
             """, unsafe_allow_html=True)
 
-            # Feature importance
             feature_importances = model.feature_importances_
             feat_df = pd.DataFrame({
                 'Feature': X.columns,
@@ -252,16 +185,11 @@ def satisfaction_prediction_page():
             )
             st.plotly_chart(fig2, use_container_width=True)
 
-    # ------------------------------
-    # Upload CSV
-    # ------------------------------
-
     elif mode == "Upload CSV File":
         uploaded_file = st.file_uploader("Upload CSV", type="csv")
 
         if uploaded_file:
             df_uploaded = pd.read_csv(uploaded_file)
-
             drop_cols = ['Unnamed: 0', 'id', 'satisfaction']
             df_uploaded = df_uploaded.drop(columns=[col for col in drop_cols if col in df_uploaded.columns], errors='ignore')
 
@@ -276,7 +204,6 @@ def satisfaction_prediction_page():
                     df_uploaded[col] = le.transform(df_uploaded[col])
 
                 df_uploaded = df_uploaded[X.columns]
-
                 preds = model.predict(df_uploaded)
                 df_uploaded["Predicted Satisfaction"] = preds
                 df_uploaded["Predicted Satisfaction Label"] = df_uploaded["Predicted Satisfaction"].map({
@@ -285,11 +212,7 @@ def satisfaction_prediction_page():
                 })
 
                 csv_out = df_uploaded.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    "⬇️ Download Predictions CSV",
-                    csv_out,
-                    file_name="satisfaction_predictions.csv"
-                )
+                st.download_button("⬇️ Download Predictions CSV", csv_out, file_name="satisfaction_predictions.csv")
 
                 summary_counts = df_uploaded["Predicted Satisfaction Label"].value_counts()
                 num_satisfied = summary_counts.get("Satisfied", 0)
@@ -304,7 +227,6 @@ def satisfaction_prediction_page():
                     """, unsafe_allow_html=True)
 
                 st.markdown("<br><br>", unsafe_allow_html=True)
-
                 st.dataframe(df_uploaded.head())
 
                 feature_importances = model.feature_importances_
@@ -331,7 +253,5 @@ def satisfaction_prediction_page():
                 )
                 st.plotly_chart(fig, use_container_width=True)
 
-
 if __name__ == "__main__":
     satisfaction_prediction_page()
-
