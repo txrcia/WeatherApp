@@ -13,6 +13,7 @@ from navigation import custom_navigation
 from Home_Page import home_page
 from satisfaction_page import satisfaction_prediction_page
 from Segment_Page import segment_page
+from forecast_page import forecast_dashboard
 from About_page import about_page
 
 col1, col2, col3 = st.columns([2, 8, 2])
@@ -58,5 +59,7 @@ elif current_page == "satisfaction":
     satisfaction_prediction_page()
 elif current_page == "segment":
     segment_page()
+elif current_page == "forecast":
+    forecast_dashboard()
 elif current_page == "about":
     about_page()
