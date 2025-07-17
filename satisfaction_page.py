@@ -179,7 +179,7 @@ def satisfaction_prediction_page():
                             "**Age**", 
                             min_value=0,
                             max_value=90,
-                            value=30,
+                            value=35,
                             step=1
                         )
                     elif feature == "Flight Distance":
@@ -203,6 +203,12 @@ def satisfaction_prediction_page():
                             min_value=0, 
                             max_value=300, 
                             value=0)
+                    else:
+                        if feature in ["Departure Delay", "Arrival Delay"]:
+                            val = st.slider(feature, min_value=0, max_value=300, value=0)
+                        else:
+                            val = st.slider(feature, float(df_train[feature].min()), float(df_train[feature].max()))
+                        user_data[feature] = val
 
 
 
