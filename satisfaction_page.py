@@ -214,9 +214,6 @@ def satisfaction_prediction_page():
                         )
                         user_data[feature] = val
 
-
-
-
             submitted = st.form_submit_button("🚀 Predict")
 
         if submitted:
