@@ -209,7 +209,7 @@ def segment_page():
             </div>
         """, unsafe_allow_html=True)
 
-        age = st.slider("Passenger Age", 18, 80, 35)
+        age = st.slider("Passenger Age", 0, 90, 35)
         customer_type = st.selectbox("Customer Type", options=le_dict['Customer Type'].classes_)
         travel_type = st.selectbox("Type of Travel", options=le_dict['Type of Travel'].classes_)
         travel_class = st.selectbox("Travel Class", options=le_dict['Class'].classes_)

@@ -177,8 +177,8 @@ def satisfaction_prediction_page():
                     if feature == "Age":
                         val = st.slider(
                             "**Age**", 
-                            min_value=18,
-                            max_value=80,
+                            min_value=0,
+                            max_value=90,
                             value=30,
                             step=1
                         )
