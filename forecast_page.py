@@ -1,12 +1,17 @@
-# streamlit_app.py
-
 import streamlit as st
-
 import pandas as pd
 import plotly.express as px
 from prophet import Prophet
 
+# --------------------------------------------------------
+# Functions
+# --------------------------------------------------------
+
 def prepare_time_series(df):
+    if 'Flight Date' not in df.columns or 'satisfaction' not in df.columns:
+        st.error("❌ Required columns not found. Make sure the CSV has 'Flight Date' and 'satisfaction'.")
+        st.stop()
+
     df['Flight Date'] = pd.to_datetime(df['Flight Date'])
     df['satisfaction_numeric'] = df['satisfaction'].map({
         'satisfied': 1,
@@ -25,9 +30,10 @@ def generate_forecast(ts_df, periods=6):
     return forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']], model
 
 def forecast_dashboard():
+    st.set_page_config(page_title="Passenger Satisfaction Forecast", layout="wide")
     st.title("📈 Forecasting Passenger Satisfaction Trends")
 
-    uploaded_file = st.file_uploader("Upload Cleaned Passenger Data (with 'satisfaction' and 'Flight Date')", type=["csv"])
+    uploaded_file = st.file_uploader("Upload Cleaned Passenger Data (with 'Flight Date' and 'satisfaction')", type=["csv"])
 
     if uploaded_file:
         df = pd.read_csv(uploaded_file)
@@ -63,6 +69,10 @@ def forecast_dashboard():
         st.success(f"The model forecasts that passenger satisfaction is **{trend}** over the next {periods} months.")
     else:
         st.info("👆 Please upload a CSV file to begin forecasting.")
+
+# --------------------------------------------------------
+# Launch
+# --------------------------------------------------------
 
 if __name__ == "__main__":
     forecast_dashboard()
