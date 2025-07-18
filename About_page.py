@@ -115,8 +115,8 @@ def about_page():
                 <p>Displays easy-to-understand charts and graphs to explore satisfaction trends.</p>
             </div>
             <div class="feature-box">
-                <h3>🚨 Anomaly Detection</h3>
-                <p>Detects unusual passenger profiles or outliers that might indicate data quality issues or rare behaviors.</p>
+                <h3>⚠️ Anomaly Detection</h3>
+                <p>Identifies unusual patterns in passenger data to uncover hidden issues or outliers that could affect satisfaction or operations.</p>
             </div>
         </div>
     """, unsafe_allow_html=True)
