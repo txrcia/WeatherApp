@@ -1,8 +1,12 @@
 import streamlit as st
 
+# This function renders the "About" page of the SkySatisfy app.
+# It explains what the platform does, its features, and its vision in a visually styled layout.
 def about_page():
+    # Injecting custom CSS styles to enhance the look and feel of the About page
     st.markdown("""
         <style>
+            /* Hero banner styling */
             .about-hero {
                 background: linear-gradient(90deg, #6a11cb, #2575fc);
                 padding: 40px 20px;
@@ -21,6 +25,8 @@ def about_page():
                 margin-top: 8px;
                 opacity: 0.9;
             }
+
+            /* Section box for body content */
             .about-section {
                 background: #222;
                 padding: 25px;
@@ -35,6 +41,8 @@ def about_page():
                 font-size: 24px;
                 margin-bottom: 15px;
             }
+
+            /* Feature boxes for listing capabilities */
             .feature-box {
                 background: linear-gradient(90deg, #9c27b0, #673ab7);
                 padding: 15px;
@@ -49,6 +57,8 @@ def about_page():
                 margin-bottom: 8px;
                 font-size: 20px;
             }
+
+            /* Vision statement box styling */
             .vision-box {
                 background: linear-gradient(90deg, #ff9800, #ff5722);
                 padding: 20px;
@@ -66,6 +76,7 @@ def about_page():
         </style>
     """, unsafe_allow_html=True)
 
+    # Hero section displaying the app title and tagline
     st.markdown("""
         <div class="about-hero">
             <h1>✈️ SkySatisfy</h1>
@@ -73,6 +84,7 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
+    # Introduction to what SkySatisfy is and what problems it solves
     st.markdown("""
         <div class="about-section">
             <p>
@@ -83,6 +95,7 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
+    # Detailed feature descriptions
     st.markdown("""
         <div class="about-section">
             <h2>🚀 What SkySatisfy Offers</h2>
@@ -105,6 +118,7 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
+    # Vision and mission of the platform
     st.markdown("""
         <div class="vision-box">
             <h2>🌐 Our Vision</h2>
