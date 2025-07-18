@@ -113,7 +113,7 @@ def home_page():
     # FEATURES SECTION
     st.markdown("## ✨ Core Features")
 
-    cols = st.columns(3)
+    cols = st.columns(4)  # Now 4 columns for 4 features
     features = [
         {
             "title": "AI Passenger Clustering",
@@ -126,6 +126,10 @@ def home_page():
         {
             "title": "Interactive Dashboards",
             "desc": "Visualize insights in stunning charts and dashboards to quickly spot trends and service gaps."
+        },
+        {
+            "title": "Anomaly Detection",
+            "desc": "Detect unusual satisfaction patterns or service anomalies for proactive investigation and resolution."
         }
     ]
 
