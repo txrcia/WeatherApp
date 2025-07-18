@@ -115,6 +115,9 @@ def about_page():
                 <h3>📊 Interactive Dashboards</h3>
                 <p>Provides visual analytics, charts, and easy-to-understand insights. Supports quick exploration of trends and patterns in passenger satisfaction.</p>
             </div>
+            <div class="feature-box">
+            <h3>🚨 Anomaly Detection</h3>
+            <p>Detects unusual patterns in passenger data, such as unexpected satisfaction scores or extreme travel behaviors. Helps flag potential service issues or outliers for timely resolution.</p>
         </div>
     """, unsafe_allow_html=True)
 
