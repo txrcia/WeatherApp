@@ -1,12 +1,12 @@
 import streamlit as st
 
-# This function renders the "About" page of the SkySatisfy app.
-# It explains what the platform does, its features, and its vision in a visually styled layout.
+# This function shows the About page of the SkySatisfy app.
+# It explains what the app does and why it's useful.
 def about_page():
-    # Injecting custom CSS styles to enhance the look and feel of the About page
+    # Custom CSS to make the page look nicer (colors, layout, fonts, etc.)
     st.markdown("""
         <style>
-            /* Hero banner styling */
+            /* Top banner with title and tagline */
             .about-hero {
                 background: linear-gradient(90deg, #6a11cb, #2575fc);
                 padding: 40px 20px;
@@ -26,7 +26,7 @@ def about_page():
                 opacity: 0.9;
             }
 
-            /* Section box for body content */
+            /* Sections that explain the app */
             .about-section {
                 background: #222;
                 padding: 25px;
@@ -42,7 +42,7 @@ def about_page():
                 margin-bottom: 15px;
             }
 
-            /* Feature boxes for listing capabilities */
+            /* Boxes that list features */
             .feature-box {
                 background: linear-gradient(90deg, #9c27b0, #673ab7);
                 padding: 15px;
@@ -58,7 +58,7 @@ def about_page():
                 font-size: 20px;
             }
 
-            /* Vision statement box styling */
+            /* Box for the vision/mission section */
             .vision-box {
                 background: linear-gradient(90deg, #ff9800, #ff5722);
                 padding: 20px;
@@ -76,7 +76,7 @@ def about_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # Hero section displaying the app title and tagline
+    # App name and short tagline at the top
     st.markdown("""
         <div class="about-hero">
             <h1>✈️ SkySatisfy</h1>
@@ -84,48 +84,48 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
-    # Introduction to what SkySatisfy is and what problems it solves
+    # Short intro explaining what the app does and why it’s helpful
     st.markdown("""
         <div class="about-section">
             <p>
-                <strong>SkySatisfy</strong> is a modern, AI-powered platform that helps airlines unlock deep insights into passenger satisfaction and behavior.
-                We believe that understanding customers is the key to building loyalty, improving services, and staying competitive in the aviation industry.
-                SkySatisfy combines advanced machine learning, intuitive visualizations, and user-friendly tools to empower airlines with data-driven decisions.
+                <strong>SkySatisfy</strong> is an AI tool that helps airlines understand and improve passenger satisfaction.
+                It gives useful insights so airlines can make better decisions and keep their customers happy.
             </p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Detailed feature descriptions
+    # List of features and what they do
     st.markdown("""
         <div class="about-section">
             <h2>🚀 What SkySatisfy Offers</h2>
             <div class="feature-box">
                 <h3>👥 Passenger Segmentation</h3>
-                <p>Automatically groups passengers into meaningful clusters based on demographics, travel patterns, and behaviors. Helps airlines tailor services and marketing to each segment’s needs.</p>
+                <p>Groups passengers based on behavior and preferences to help airlines serve them better.</p>
             </div>
             <div class="feature-box">
                 <h3>😊 Satisfaction Prediction</h3>
-                <p>Predicts whether a passenger is likely to be satisfied or dissatisfied based on their travel experience. Allows proactive action to improve loyalty and reduce churn.</p>
+                <p>Predicts if a passenger will be satisfied or not based on their journey experience.</p>
             </div>
             <div class="feature-box">
                 <h3>🔎 Service Insights & Recommendations</h3>
-                <p>Identifies which services matter most to each passenger group. Pinpoints low-rated services that need improvement to enhance overall experience.</p>
+                <p>Shows which services matter most and which need improvement.</p>
             </div>
             <div class="feature-box">
                 <h3>📊 Interactive Dashboards</h3>
-                <p>Provides visual analytics, charts, and easy-to-understand insights. Supports quick exploration of trends and patterns in passenger satisfaction.</p>
+                <p>Displays easy-to-understand charts and graphs to explore satisfaction trends.</p>
             </div>
         </div>
     """, unsafe_allow_html=True)
 
-    # Vision and mission of the platform
+    # Final box showing the app’s mission and vision
     st.markdown("""
         <div class="vision-box">
             <h2>🌐 Our Vision</h2>
             <p>
-                At SkySatisfy, our mission is to help airlines transform raw data into meaningful strategies. By revealing what truly drives passenger satisfaction, we enable airlines to optimize operations, elevate service quality, and increase profitability.
+                SkySatisfy helps airlines turn data into smart strategies. We want to make flying better for passengers
+                and more profitable for airlines.
                 <br><br>
-                SkySatisfy is your co-pilot on the journey to higher customer loyalty and a better flying experience.
+                Think of us as your co-pilot for improving customer experience.
             </p>
         </div>
     """, unsafe_allow_html=True)
