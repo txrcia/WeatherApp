@@ -70,7 +70,7 @@ def get_cluster_recommendation(df, cluster_num):
     rec = f"🎯 Cluster {cluster_num} — Based on passengers in this cluster:\n"
     rec += "\nAirline should improve these 5 services:\n"
     for i, (feature, score) in enumerate(lowest_5.items(), start=1):
-        rec += f"\n  {i}. {feature} — avg. score: {score:.2f}\n"
+        rec += f" {i}. {feature} — avg. score: {score:.2f}\n"
     return rec
 
 # -----------------------------------------------------
