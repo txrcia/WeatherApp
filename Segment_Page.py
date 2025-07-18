@@ -20,6 +20,7 @@ def load_data():
 
 kmeans, le_dict, median_distance = load_data()
 
+# List of service rating columns
 service_cols = [
     'Inflight wifi service', 'Departure/Arrival time convenient', 'Ease of Online booking',
     'Gate location', 'Food and drink', 'Online boarding', 'Seat comfort',
@@ -28,7 +29,7 @@ service_cols = [
 ]
 
 # -----------------------------------------------------
-# Helper to categorize age
+# Helper function to categorize age groups
 # -----------------------------------------------------
 def categorize_age(age):
     if age <= 30:
@@ -39,7 +40,7 @@ def categorize_age(age):
         return 'Old'
 
 # -----------------------------------------------------
-# Prediction function
+# Predict cluster using encoded inputs
 # -----------------------------------------------------
 def predict_cluster(age, customer_type, travel_type, travel_class, flight_distance,
                     kmeans, le_dict, median_distance):
@@ -58,7 +59,7 @@ def predict_cluster(age, customer_type, travel_type, travel_class, flight_distan
     return cluster, age_group, flight_cat
 
 # -----------------------------------------------------
-# Recommendation function for one cluster
+# Return service improvement recommendations for cluster
 # -----------------------------------------------------
 def get_cluster_recommendation(df, cluster_num):
     cluster_df = df[df['Assigned Cluster'] == cluster_num]
@@ -74,7 +75,7 @@ def get_cluster_recommendation(df, cluster_num):
     return rec
 
 # -----------------------------------------------------
-# Interactive Plotly Visualization helper
+# Create an interactive bar chart for top/bottom services
 # -----------------------------------------------------
 def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=16):
     try:
@@ -91,7 +92,6 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
             return
 
         n_bars = len(selected)
-        # 🔵🟣 Blue & Purple shades
         colors = ['#5B9BD5', '#6A5ACD', '#4B0082', '#9370DB', '#483D8B'][:n_bars][::-1]
 
         fig = go.Figure(go.Bar(
@@ -120,10 +120,10 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
 
 
 # -----------------------------------------------------
-# Streamlit UI
+# Streamlit interface for passenger segmentation
 # -----------------------------------------------------
 def segment_page():
-    # CSS
+    # CSS Styling
     st.markdown("""
         <style>
             html, body, div, p, span, li, label, select, input, button {
@@ -179,7 +179,7 @@ def segment_page():
 
     st.markdown("<hr style='border: 0.5px solid #DDD;'>", unsafe_allow_html=True)
 
-    # Sidebar
+    # Sidebar Options
     st.sidebar.markdown("""
         <hr style='border: 1px solid #CCC; margin-top: 50px; margin-bottom: 1px;'>
         <h2 style='font-size: 23px; margin-top: 5px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
@@ -201,7 +201,7 @@ def segment_page():
         viz_top5 = st.sidebar.checkbox("Top 5 Services", value=True)
         viz_bottom5 = st.sidebar.checkbox("Bottom 5 Services", value=False)
 
-    # Clear state if switching modes
+    # Track and reset session state if input mode changes
     if "prev_mode" not in st.session_state:
         st.session_state["prev_mode"] = mode
     if st.session_state["prev_mode"] != mode:
@@ -292,7 +292,7 @@ def segment_page():
                 st.error(f"CSV missing required columns: {required_cols}")
 
     # --------------------------------------------------
-    # Show results if available
+    # Display clustering results if available
     # --------------------------------------------------
     if "segmentation_df" in st.session_state:
         df = st.session_state["segmentation_df"]
@@ -370,5 +370,6 @@ def segment_page():
         if show_viz:
             st.warning("⚠️ Please predict a cluster or upload CSV first to see visualizations.")
 
+# Run app for standalone testing
 if __name__ == "__main__":
     segment_page()

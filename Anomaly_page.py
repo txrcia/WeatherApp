@@ -41,7 +41,6 @@ def anomaly_detection():
         - Adjust the **Contamination slider** to control how strict the anomaly detection is.
         """)
 
-
     st.markdown("Detect anomalies in passenger feedback using Isolation Forest or Local Outlier Factor.")
 
     uploaded_file = st.file_uploader("📂 Upload passenger satisfaction CSV", type=["csv"])
@@ -102,13 +101,17 @@ def anomaly_detection():
                 )
                 contamination = st.sidebar.slider("Contamination", 0.01, 0.2, 0.05)
 
-                # Execute detection
+                # Clean missing values
+                X_clean = X.dropna()
+
                 if method == "Isolation Forest":
                     clf = IsolationForest(contamination=contamination, random_state=42)
-                    df['anomaly'] = clf.fit_predict(X)
+                    df['anomaly'] = clf.fit_predict(X_clean)
                 else:
                     clf = LocalOutlierFactor(n_neighbors=20, contamination=contamination)
-                    df['anomaly'] = clf.fit_predict(X)
+                    preds = clf.fit_predict(X_clean)
+                    df = df.loc[X_clean.index]  # align df with cleaned X
+                    df['anomaly'] = preds
 
                 df['anomaly'] = df['anomaly'].map({1: 'Normal', -1: 'Anomaly'})
 
