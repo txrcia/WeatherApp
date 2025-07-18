@@ -68,7 +68,7 @@ def get_cluster_recommendation(df, cluster_num):
     means = cluster_df[service_cols].mean()
     lowest_5 = means.sort_values().head(5)
     rec = f"🎯 Cluster {cluster_num} — Based on passengers in this cluster:\n"
-    rec += "Airline should improve these 5 services:\n"
+    rec += "\nAirline should improve these 5 services:\n"
     for i, (feature, score) in enumerate(lowest_5.items(), start=1):
         rec += f"  {i}. {feature} — avg. score: {score:.2f}\n"
     return rec
