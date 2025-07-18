@@ -7,7 +7,6 @@ from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import LabelEncoder
 import plotly.express as px
-import io
 
 def preprocess_data(df):
     try:
@@ -23,15 +22,10 @@ def preprocess_data(df):
         return None, None
 
 def anomaly_detection():
+    st.title("🛑 Airline Passenger Anomaly Detection")
+
+    st.markdown("Detect anomalies in passenger feedback using Isolation Forest or Local Outlier Factor.")
     
-    st.title("🛑 Airline Passenger Anomaly Detection Dashboard")
-
-    st.markdown("""
-    Detect unusual passenger behavior or feedback patterns using Isolation Forest or Local Outlier Factor.
-    Upload your CSV to begin.
-    """)
-
-    # File uploader
     uploaded_file = st.file_uploader("📂 Upload passenger satisfaction CSV", type=["csv"])
 
     if uploaded_file:
@@ -64,18 +58,21 @@ def anomaly_detection():
                     <hr style='border: 1px solid #CCC; margin-top: 5px; margin-bottom: 15px;'>
                 """, unsafe_allow_html=True)
 
-                st.sidebar.markdown("""
-                <span style='color: grey; font-size: 15px;'>
-                <b>Isolation Forest</b> detects anomalies by randomly selecting features and splitting them.<br><br>
-                <b>Local Outlier Factor (LOF)</b> detects anomalies based on local density deviations from neighbors.<br><br>
-                Use the <b>slider</b> below to set the expected percentage of outliers. Higher values will flag more data as anomalies.
-                </span>
-                """, unsafe_allow_html=True)
+                # Method explanation
+                st.sidebar.markdown(
+                    "<span style='color: grey;'>🔍 Choose method for anomaly detection:</span>",
+                    unsafe_allow_html=True
+                )
+                method = st.sidebar.radio("Method", ["Isolation Forest", "Local Outlier Factor"])
 
-                st.sidebar.header("🔎 Anomaly Detection Settings")
-                method = st.sidebar.radio("Select Method", ["Isolation Forest", "Local Outlier Factor"])
-                contamination = st.sidebar.slider("Expected Outlier Percentage", 0.01, 0.2, 0.05)
+                # Contamination explanation
+                st.sidebar.markdown(
+                    "<span style='color: grey;'>📉 Select the percentage of expected anomalies. More = stricter detection.</span>",
+                    unsafe_allow_html=True
+                )
+                contamination = st.sidebar.slider("Contamination", 0.01, 0.2, 0.05)
 
+                # Execute detection
                 if method == "Isolation Forest":
                     clf = IsolationForest(contamination=contamination, random_state=42)
                     df['anomaly'] = clf.fit_predict(X)
