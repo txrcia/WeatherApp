@@ -113,7 +113,7 @@ def home_page():
     # FEATURES SECTION
     st.markdown("## ✨ Core Features")
 
-    cols = st.columns(4)  # Now 4 columns for 4 features
+    cols = st.columns(4)  
     features = [
         {
             "title": "AI Passenger Clustering",
@@ -147,7 +147,7 @@ def home_page():
 
     st.markdown("---")
 
-    # HOW IT WORKS - BLUE TO BLACK
+    # HOW IT WORKS 
     st.markdown("## ⚙️ How SkySatisfy Works")
 
     steps = [
@@ -168,7 +168,7 @@ def home_page():
 
     st.markdown("---")
 
-    # WHY AIRLINES CHOOSE - PURPLE TO BLACK
+   
     st.markdown("## 🎯 Why Airlines Choose SkySatisfy")
 
     benefits = [
@@ -189,7 +189,7 @@ def home_page():
 
     st.markdown("---")
 
-    # FINAL ABOUT BOX
+    # ABOUT BOX
     st.markdown("""
         <div class="about-box">
             <h3>ℹ️ About SkySatisfy</h3>

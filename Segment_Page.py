@@ -120,7 +120,7 @@ def plot_services_interactive(df, cluster_num, top=True, height=300, font_size=1
 
 
 # -----------------------------------------------------
-# Streamlit interface for passenger segmentation
+# Streamlit UI for passenger segmentation
 # -----------------------------------------------------
 def segment_page():
     # CSS Styling
@@ -370,6 +370,6 @@ def segment_page():
         if show_viz:
             st.warning("⚠️ Please predict a cluster or upload CSV first to see visualizations.")
 
-# Run app for standalone testing
+
 if __name__ == "__main__":
     segment_page()

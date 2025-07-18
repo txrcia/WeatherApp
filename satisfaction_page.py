@@ -7,7 +7,7 @@ import plotly.express as px
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 # -----------------------------------------------------
-# Load trained model and encoders from local .pkl files
+# Load trained model and encoders 
 # -----------------------------------------------------
 @st.cache_resource
 def load_model_and_encoders():
@@ -53,7 +53,7 @@ def load_data():
 df_train, X, y, categorical_cols = load_data()
 
 # -----------------------------------------------------
-# Streamlit main UI for satisfaction prediction page
+# Streamlit UI for satisfaction prediction page
 # -----------------------------------------------------
 def satisfaction_prediction_page():
 

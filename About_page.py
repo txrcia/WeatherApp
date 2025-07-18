@@ -1,7 +1,6 @@
 import streamlit as st
 
 def about_page():
-    # Injects custom CSS to style the About page for layout, color themes, and font aesthetics
     st.markdown("""
         <style>
             .about-hero {
@@ -67,7 +66,7 @@ def about_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # Displays the hero section with title and subtitle
+    # Hero Banner
     st.markdown("""
         <div class="about-hero">
             <h1>✈️ SkySatisfy</h1>
@@ -75,58 +74,61 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
-    # Provides an overview of the platform's goals and philosophy
+    # Introduction
     st.markdown("""
         <div class="about-section">
             <p>
-                <strong>SkySatisfy</strong> is a modern, AI-powered platform that helps airlines unlock deep insights into passenger satisfaction and behavior.
-                We believe that understanding customers is the key to building loyalty, improving services, and staying competitive in the aviation industry.
-                SkySatisfy combines advanced machine learning, intuitive visualizations, and user-friendly tools to empower airlines with data-driven decisions.
+                <strong>SkySatisfy</strong> is a smart, AI-driven platform built to help airlines deeply understand passenger satisfaction and behavior. 
+                By combining machine learning, rich analytics, and user-friendly dashboards, SkySatisfy enables data-driven decision-making to enhance 
+                customer experience, optimize operations, and drive loyalty.
             </p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Outlines the key features of the platform with styled highlight boxes
+    # Features Section
     st.markdown("""
         <div class="about-section">
             <h2>🚀 What SkySatisfy Offers</h2>
 
             <div class="feature-box">
                 <h3>👥 Passenger Segmentation</h3>
-                <p>Automatically groups passengers into meaningful clusters based on demographics, travel patterns, and behaviors. Helps airlines tailor services and marketing to each segment’s needs.</p>
+                <p>Clusters passengers based on demographic profiles, travel behavior, and preferences to support targeted service and personalized campaigns.</p>
             </div>
 
             <div class="feature-box">
                 <h3>😊 Satisfaction Prediction</h3>
-                <p>Predicts whether a passenger is likely to be satisfied or dissatisfied based on their travel experience. Allows proactive action to improve loyalty and reduce churn.</p>
+                <p>Uses machine learning to predict whether a passenger is likely to be satisfied or dissatisfied, enabling proactive service adjustments.</p>
             </div>
 
             <div class="feature-box">
                 <h3>🔎 Service Insights & Recommendations</h3>
-                <p>Identifies which services matter most to each passenger group. Pinpoints low-rated services that need improvement to enhance overall experience.</p>
+                <p>Highlights which services most impact satisfaction. Guides improvements by identifying pain points specific to passenger clusters.</p>
             </div>
 
             <div class="feature-box">
                 <h3>📊 Interactive Dashboards</h3>
-                <p>Provides visual analytics, charts, and easy-to-understand insights. Supports quick exploration of trends and patterns in passenger satisfaction.</p>
+                <p>Explore real-time visualizations, trends, and correlations through intuitive dashboards designed for fast, impactful decision-making.</p>
             </div>
 
             <div class="feature-box">
                 <h3>🚨 Anomaly Detection</h3>
-                <p>Detects unusual or suspicious passenger behavior and service patterns using advanced AI algorithms. Helps identify operational issues and improve safety and quality control.</p>
+                <p>
+                    Automatically detects outliers in passenger data using statistical methods. 
+                    SkySatisfy flags scores that deviate by more than two standard deviations from the cluster mean, identifying unusual patterns or 
+                    service failures. Alerts are integrated into the recommendation engine for timely action.
+                </p>
             </div>
-
         </div>
     """, unsafe_allow_html=True)
 
-    # Displays the company vision at the bottom of the page
+    # Vision Statement
     st.markdown("""
         <div class="vision-box">
             <h2>🌐 Our Vision</h2>
             <p>
-                At SkySatisfy, our mission is to help airlines transform raw data into meaningful strategies. By revealing what truly drives passenger satisfaction, we enable airlines to optimize operations, elevate service quality, and increase profitability.
-                <br><br>
-                SkySatisfy is your co-pilot on the journey to higher customer loyalty and a better flying experience.
+                At SkySatisfy, we envision a world where airlines don’t just react to customer feedback—they anticipate it. 
+                By transforming raw data into actionable insight, SkySatisfy enables smarter strategy, greater efficiency, 
+                and elevated passenger satisfaction. Let us be your AI co-pilot on the journey toward excellence.
             </p>
         </div>
     """, unsafe_allow_html=True)
