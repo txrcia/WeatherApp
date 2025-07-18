@@ -343,7 +343,7 @@ def segment_page():
                 with st.expander("📊 Cluster Info", expanded=True):
                     cluster_counts = df["Assigned Cluster"].value_counts().sort_index()
                     for cluster_num, count in cluster_counts.items():
-                        st.markdown(f"**Cluster {cluster_num}:** {count} passengers")
+                        st.markdown(f"Cluster {cluster_num}: {count} passengers")
 
             with col2:
                 with st.expander("✈️ Airline Recommendations", expanded=True):
