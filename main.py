@@ -48,7 +48,7 @@ pages = {
     "main": "🏠 Home",
     "satisfaction": "😊 Satisfaction Prediction",
     "segment": "👥 Passenger Segmentation",
-    "forecast": "📈 Forecast",
+    "anomaly": "🛑 Anomaly Detection",
     "about": "ℹ️ About SkySatisfy"
 }
 
@@ -60,7 +60,7 @@ elif current_page == "satisfaction":
     satisfaction_prediction_page()
 elif current_page == "segment":
     segment_page()
-elif current_page == "forecast":
+elif current_page == "anomaly":
     anomaly_detection()
 elif current_page == "about":
     about_page()

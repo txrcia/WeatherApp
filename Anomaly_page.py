@@ -22,10 +22,18 @@ def preprocess_data(df):
         return None, None
 
 def anomaly_detection():
-    st.title("🛑 Airline Passenger Anomaly Detection")
-
+    st.markdown("""
+    <h1 style='
+        font-size: 37px;
+        font-weight: bold;
+        text-align: center;
+        color: white;
+    '>
+        🛑 Airline Passenger Anomaly Detection
+    </h1>
+    """, unsafe_allow_html=True)
     st.markdown("Detect anomalies in passenger feedback using Isolation Forest or Local Outlier Factor.")
-    
+
     uploaded_file = st.file_uploader("📂 Upload passenger satisfaction CSV", type=["csv"])
 
     if uploaded_file:
@@ -58,14 +66,26 @@ def anomaly_detection():
                     <hr style='border: 1px solid #CCC; margin-top: 5px; margin-bottom: 15px;'>
                 """, unsafe_allow_html=True)
 
-                # Method explanation
+                # Method selection
                 st.sidebar.markdown(
                     "<span style='color: grey;'>🔍 Choose method for anomaly detection:</span>",
                     unsafe_allow_html=True
                 )
                 method = st.sidebar.radio("Method", ["Isolation Forest", "Local Outlier Factor"])
 
-                # Contamination explanation
+                # Method usage description
+                if method == "Isolation Forest":
+                    st.sidebar.markdown(
+                        "<span style='color: grey;'>✅ Good for high-dimensional data. Detects points that are 'isolated' from the rest.</span>",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.sidebar.markdown(
+                        "<span style='color: grey;'>✅ Good for dense clusters. Flags points with few close neighbors as outliers.</span>",
+                        unsafe_allow_html=True
+                    )
+
+                # Contamination slider
                 st.sidebar.markdown(
                     "<span style='color: grey;'>📉 Select the percentage of expected anomalies. More = stricter detection.</span>",
                     unsafe_allow_html=True
