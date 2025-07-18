@@ -1,6 +1,7 @@
 import streamlit as st
 
 def about_page():
+    # Injects custom CSS styles for layout, colors, and fonts
     st.markdown("""
         <style>
             .about-hero {
@@ -66,6 +67,7 @@ def about_page():
         </style>
     """, unsafe_allow_html=True)
 
+    # Displays the hero title and subtitle section at the top
     st.markdown("""
         <div class="about-hero">
             <h1>✈️ SkySatisfy</h1>
@@ -73,6 +75,7 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
+    # Main description about the app's purpose and philosophy
     st.markdown("""
         <div class="about-section">
             <p>
@@ -83,6 +86,7 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
+    # List of platform features, each in its own styled box
     st.markdown("""
         <div class="about-section">
             <h2>🚀 What SkySatisfy Offers</h2>
@@ -109,6 +113,7 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
+    # Company vision and final message
     st.markdown("""
         <div class="vision-box">
             <h2>🌐 Our Vision</h2>
