@@ -23,7 +23,7 @@ def preprocess_data(df):
         return None, None
 
 def anomaly_detection():
-    st.set_page_config(page_title="Passenger Anomaly Detection", layout="wide")
+    
     st.title("🛑 Airline Passenger Anomaly Detection Dashboard")
 
     st.markdown("""
