@@ -1,5 +1,8 @@
 # streamlit_app.py
+
 import streamlit as st
+st.set_page_config(page_title="Passenger Satisfaction Forecast", layout="wide")
+
 import pandas as pd
 import plotly.express as px
 from prophet import Prophet
@@ -23,7 +26,6 @@ def generate_forecast(ts_df, periods=6):
     return forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']], model
 
 def forecast_dashboard():
-    st.set_page_config(page_title="Passenger Satisfaction Forecast", layout="wide")
     st.title("📈 Forecasting Passenger Satisfaction Trends")
 
     uploaded_file = st.file_uploader("Upload Cleaned Passenger Data (with 'satisfaction' and 'Flight Date')", type=["csv"])
