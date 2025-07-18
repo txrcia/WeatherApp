@@ -124,13 +124,14 @@ def home_page():
             "desc": "Predict if a passenger will be satisfied or not — enabling proactive engagement to boost loyalty."
         },
         {
+            "title": "Anomaly Detection",
+            "desc": "Detect unusual satisfaction patterns or service anomalies for proactive investigation and resolution."
+        },
+        {
             "title": "Interactive Dashboards",
             "desc": "Visualize insights in stunning charts and dashboards to quickly spot trends and service gaps."
         },
-        {
-            "title": "Anomaly Detection",
-            "desc": "Detect unusual satisfaction patterns or service anomalies for proactive investigation and resolution."
-        }
+        
     ]
 
     for col, feature in zip(cols, features):
