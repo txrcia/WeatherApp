@@ -1,5 +1,3 @@
-# anomaly_app.py
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -7,140 +5,100 @@ from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import LabelEncoder
 import plotly.express as px
-import io
 
-def preprocess_data(df):
-    try:
+def anomaly_detection():
+    st.set_page_config(page_title="Passenger Anomaly Detection", layout="wide")
+
+    st.title("🛑 Airline Passenger Anomaly Detection Dashboard")
+    st.markdown("""
+    Detect unusual passenger behavior or feedback patterns based on service ratings, delays, and loyalty status.
+    Upload a CSV and select an anomaly detection method to get started.
+    """)
+
+    # Sidebar explanations and options
+    st.sidebar.markdown("""
+        <hr style='border: 1px solid #CCC; margin-top: 30px; margin-bottom: 1px;'>
+        <h2 style='font-size: 23px; color: grey; margin-top: 5px; margin-bottom: 0px;'>🎛️ Filter Options</h2>
+        <hr style='border: 1px solid #CCC; margin-top: 5px; margin-bottom: 15px;'>
+        <p style='font-size: 14px; color: grey;'>
+        <strong>🔍 Method:</strong><br>
+        • <b>Isolation Forest</b>: Efficient for large datasets; isolates anomalies based on random splits.<br>
+        • <b>Local Outlier Factor</b>: Compares density of points; good for local, smaller anomalies.<br><br>
+        <strong>🎚️ Outlier Percentage:</strong><br>
+        Use the slider below to set how many points you expect to be anomalies (1%–20%).
+        Higher values mark more data as outliers.
+        </p>
+    """, unsafe_allow_html=True)
+
+    method = st.sidebar.radio("Select Method", ["Isolation Forest", "Local Outlier Factor"])
+    contamination = st.sidebar.slider("Expected Outlier Percentage", 0.01, 0.2, 0.05)
+
+    # File upload
+    uploaded_file = st.file_uploader("📁 Upload passenger satisfaction CSV", type=["csv"])
+
+    if uploaded_file:
+        df = pd.read_csv(uploaded_file)
+        df_original = df.copy()
+
+        st.subheader("📊 Raw Data Preview")
+        st.dataframe(df.head(10))
+
+        # Encode categorical columns
         cat_cols = ['Gender', 'Customer Type', 'Type of Travel', 'Class', 'satisfaction']
         encoders = {}
         for col in cat_cols:
             le = LabelEncoder()
             df[col] = le.fit_transform(df[col])
             encoders[col] = le
-        return df, encoders
-    except Exception as e:
-        st.error(f"Error in preprocessing: {e}")
-        return None, None
 
-def anomaly_detection():
-    
-    st.title("🛑 Airline Passenger Anomaly Detection Dashboard")
+        features = [
+            'Gender', 'Customer Type', 'Age', 'Type of Travel', 'Class', 'Flight Distance',
+            'Inflight wifi service', 'Departure/Arrival time convenient',
+            'Ease of Online booking', 'Gate location', 'Food and drink',
+            'Online boarding', 'Seat comfort', 'Inflight entertainment',
+            'On-board service', 'Leg room service', 'Baggage handling',
+            'Checkin service', 'Inflight service', 'Cleanliness',
+            'Departure Delay in Minutes', 'Arrival Delay in Minutes',
+            'satisfaction'
+        ]
 
-    st.markdown("""
-    Detect unusual passenger behavior or feedback patterns using Isolation Forest or Local Outlier Factor.
-    Upload your CSV to begin.
-    """)
+        X = df[features]
 
-    # Sample CSV download
-    sample_df = pd.DataFrame({
-        'Gender': ['Male', 'Female'],
-        'Customer Type': ['Loyal Customer', 'disloyal Customer'],
-        'Age': [34, 45],
-        'Type of Travel': ['Business travel', 'Personal Travel'],
-        'Class': ['Eco', 'Business'],
-        'Flight Distance': [1234, 567],
-        'Inflight wifi service': [3, 2],
-        'Departure/Arrival time convenient': [3, 1],
-        'Ease of Online booking': [4, 2],
-        'Gate location': [2, 4],
-        'Food and drink': [3, 2],
-        'Online boarding': [4, 3],
-        'Seat comfort': [3, 2],
-        'Inflight entertainment': [4, 2],
-        'On-board service': [4, 3],
-        'Leg room service': [3, 2],
-        'Baggage handling': [4, 3],
-        'Checkin service': [4, 2],
-        'Inflight service': [4, 3],
-        'Cleanliness': [5, 3],
-        'Departure Delay in Minutes': [5, 0],
-        'Arrival Delay in Minutes': [0, 3],
-        'satisfaction': ['satisfied', 'neutral or dissatisfied']
-    })
+        # Apply selected method
+        if method == "Isolation Forest":
+            clf = IsolationForest(contamination=contamination, random_state=42)
+            df['anomaly'] = clf.fit_predict(X)
+        else:
+            clf = LocalOutlierFactor(n_neighbors=20, contamination=contamination)
+            df['anomaly'] = clf.fit_predict(X)
 
-    st.download_button("📥 Download Sample CSV", sample_df.to_csv(index=False), "sample_passenger_data.csv")
+        df['anomaly'] = df['anomaly'].map({1: 'Normal', -1: 'Anomaly'})
 
-    # File uploader
-    uploaded_file = st.file_uploader("📂 Upload passenger satisfaction CSV", type=["csv"])
+        st.subheader("🚩 Anomaly Summary")
+        st.write(df['anomaly'].value_counts())
 
-    if uploaded_file:
-        try:
-            with st.spinner("Processing data..."):
-                df = pd.read_csv(uploaded_file)
-                df_original = df.copy()
-                st.subheader("📊 Raw Data Sample")
-                st.dataframe(df.head(10))
+        # Show only anomalies
+        anomalies = df[df['anomaly'] == 'Anomaly']
+        st.subheader("🔍 Top Anomalies")
+        st.dataframe(anomalies[[
+            'Gender', 'Customer Type', 'Age', 'Type of Travel', 'Class',
+            'Flight Distance', 'Departure Delay in Minutes',
+            'Arrival Delay in Minutes', 'satisfaction'
+        ]].head(10))
 
-                df, encoders = preprocess_data(df)
-                if df is None:
-                    return
+        # Visualization 1: Scatter
+        st.subheader("📈 Flight Distance vs Delay (Colored by Anomaly)")
+        fig = px.scatter(df, x="Flight Distance", y="Departure Delay in Minutes",
+                         color="anomaly", hover_data=['Age', 'satisfaction', 'Customer Type'])
+        st.plotly_chart(fig, use_container_width=True)
 
-                features = [
-                    'Gender', 'Customer Type', 'Age', 'Type of Travel', 'Class', 'Flight Distance',
-                    'Inflight wifi service', 'Departure/Arrival time convenient',
-                    'Ease of Online booking', 'Gate location', 'Food and drink',
-                    'Online boarding', 'Seat comfort', 'Inflight entertainment',
-                    'On-board service', 'Leg room service', 'Baggage handling',
-                    'Checkin service', 'Inflight service', 'Cleanliness',
-                    'Departure Delay in Minutes', 'Arrival Delay in Minutes',
-                    'satisfaction'
-                ]
-                X = df[features]
-
-                st.sidebar.header("🔎 Anomaly Detection Settings")
-                method = st.sidebar.radio("Select Method", ["Isolation Forest", "Local Outlier Factor"])
-                contamination = st.sidebar.slider("Expected Outlier Percentage", 0.01, 0.2, 0.05)
-
-                if method == "Isolation Forest":
-                    clf = IsolationForest(contamination=contamination, random_state=42)
-                    df['anomaly'] = clf.fit_predict(X)
-                else:
-                    clf = LocalOutlierFactor(n_neighbors=20, contamination=contamination)
-                    df['anomaly'] = clf.fit_predict(X)
-
-                df['anomaly'] = df['anomaly'].map({1: 'Normal', -1: 'Anomaly'})
-
-                st.subheader("🚩 Anomaly Summary")
-                st.write(df['anomaly'].value_counts())
-
-                anomalies = df[df['anomaly'] == 'Anomaly']
-                st.subheader("🔍 Top 10 Anomalous Passengers")
-                st.dataframe(anomalies[['Gender', 'Customer Type', 'Age', 'Type of Travel', 'Class',
-                                        'Flight Distance', 'Departure Delay in Minutes', 'Arrival Delay in Minutes',
-                                        'satisfaction']].head(10))
-
-                st.download_button("📥 Download Anomalies CSV", anomalies.to_csv(index=False), file_name="anomalies.csv")
-
-                st.subheader("📈 Visualizations")
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    fig1 = px.scatter(
-                        df,
-                        x="Flight Distance",
-                        y="Departure Delay in Minutes",
-                        color="anomaly",
-                        hover_data=['Age', 'satisfaction', 'Customer Type'],
-                        title="Flight Distance vs. Departure Delay"
-                    )
-                    st.plotly_chart(fig1, use_container_width=True)
-
-                with col2:
-                    fig2 = px.box(
-                        df,
-                        x="anomaly",
-                        y="Arrival Delay in Minutes",
-                        color="anomaly",
-                        points="all",
-                        title="Arrival Delay by Anomaly Status"
-                    )
-                    st.plotly_chart(fig2, use_container_width=True)
-
-        except Exception as e:
-            st.error(f"❌ Error reading file: {e}")
+        # Visualization 2: Boxplot
+        st.subheader("📦 Delay Distribution by Anomaly Status")
+        fig2 = px.box(df, x='anomaly', y='Arrival Delay in Minutes', points='all', color='anomaly')
+        st.plotly_chart(fig2, use_container_width=True)
 
     else:
-        st.info("👆 Upload a valid CSV file with passenger satisfaction data to begin.")
+        st.info("📤 Please upload a CSV file to begin anomaly detection.")
 
 if __name__ == "__main__":
     anomaly_detection()
