@@ -106,7 +106,7 @@ def about_page():
             </div>
             <div class="feature-box">
                 <h3>🚨 Anomaly Detection</h3>
-                <p>Uses AI models to identify unusual or suspicious passenger behavior or service patterns that may need attention.</p>
+                <p>Uses AI models like Isolation Forest and Local Outlier Factor to detect unusual passenger behaviors or outliers in service ratings.</p>
             </div>
         </div>
     """, unsafe_allow_html=True)
