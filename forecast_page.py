@@ -1,75 +1,67 @@
+# streamlit_app.py
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 from prophet import Prophet
-import numpy as np
 
-# ----------------------------
-# Load and preprocess dataset
-# ----------------------------
-@st.cache_data
-def load_data():
-    df = pd.read_csv("satisfaction_data.csv")  # Your dataset must include 'date' and 'satisfaction'
-    df['date'] = pd.to_datetime(df['date'])
-    df['satisfaction_binary'] = df['satisfaction'].apply(lambda x: 1 if x == "satisfied" else 0)
-    df = df.groupby('date')["satisfaction_binary"].mean().reset_index()
-    df.columns = ['ds', 'y']
-    return df
+def prepare_time_series(df):
+    df['Flight Date'] = pd.to_datetime(df['Flight Date'])
+    df['satisfaction_numeric'] = df['satisfaction'].map({
+        'satisfied': 1,
+        'neutral or dissatisfied': 0
+    })
 
-# ----------------------------
-# Anomaly Detection Function
-# ----------------------------
-def detect_anomalies(df, window=7, threshold=2.5):
-    df['rolling_mean'] = df['y'].rolling(window, center=True).mean()
-    df['rolling_std'] = df['y'].rolling(window, center=True).std()
-    df['anomaly'] = np.abs(df['y'] - df['rolling_mean']) > threshold * df['rolling_std']
-    return df
+    ts_df = df.groupby('Flight Date')['satisfaction_numeric'].mean().reset_index()
+    ts_df.columns = ['ds', 'y']  # Prophet expects 'ds' and 'y'
+    return ts_df
 
-# ----------------------------
-# Forecast Function
-# ----------------------------
-def run_forecast(df, periods=30):
+def generate_forecast(ts_df, periods=6):
     model = Prophet()
-    model.fit(df)
-    future = model.make_future_dataframe(periods=periods)
+    model.fit(ts_df)
+    future = model.make_future_dataframe(periods=periods * 30)  # approx 30 days per month
     forecast = model.predict(future)
-    return forecast, model
+    return forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']], model
 
-# ----------------------------
-# Streamlit UI
-# ----------------------------
-st.set_page_config(page_title="✈️ AI Satisfaction Dashboard", layout="wide")
-st.title("✈️ Airline Passenger Satisfaction AI Dashboard")
-st.markdown("This dashboard detects anomalies and forecasts future satisfaction rates using AI.")
+def forecast_dashboard():
+    st.set_page_config(page_title="Passenger Satisfaction Forecast", layout="wide")
+    st.title("📈 Forecasting Passenger Satisfaction Trends")
 
-option = st.sidebar.selectbox("Select Dashboard", ["Forecast Satisfaction", "Anomaly Detection"])
+    uploaded_file = st.file_uploader("Upload Cleaned Passenger Data (with 'satisfaction' and 'Flight Date')", type=["csv"])
 
-# Load data
-data = load_data()
+    if uploaded_file:
+        df = pd.read_csv(uploaded_file)
 
-if option == "Forecast Satisfaction":
-    st.subheader("📈 Forecasting Satisfaction Trends")
-    future_days = st.slider("Select how many days to forecast", 7, 60, 30)
-    forecast, model = run_forecast(data, periods=future_days)
-    fig1 = model.plot(forecast)
-    st.write("### Forecast Plot")
-    st.pyplot(fig1)
-    st.write("### Forecast Components")
-    fig2 = model.plot_components(forecast)
-    st.pyplot(fig2)
+        st.subheader("📊 Satisfaction Over Time")
+        ts_df = prepare_time_series(df)
+        st.dataframe(ts_df.rename(columns={'ds': 'Date', 'y': 'Avg Satisfaction'}), use_container_width=True)
 
-elif option == "Anomaly Detection":
-    st.subheader("🚨 Anomaly Detection in Daily Satisfaction")
-    window_size = st.slider("Rolling Window Size", 3, 30, 7)
-    threshold = st.slider("Anomaly Threshold (std dev)", 1.0, 4.0, 2.5)
-    anomalies_df = detect_anomalies(data.copy(), window=window_size, threshold=threshold)
-    st.line_chart(anomalies_df.set_index('ds')[['y', 'rolling_mean']])
-    st.write("### Detected Anomalies")
-    st.dataframe(anomalies_df[anomalies_df['anomaly'] == True])
+        fig1 = px.line(ts_df, x='ds', y='y', title="Average Satisfaction Over Time", markers=True)
+        st.plotly_chart(fig1, use_container_width=True)
 
-# ------------------------------
-# Run app
-# ------------------------------
+        st.subheader("🔮 Forecast Settings")
+        periods = st.slider("Months to Forecast Ahead", min_value=1, max_value=12, value=6)
+        forecast, model = generate_forecast(ts_df, periods=periods)
+
+        st.subheader("📈 Forecasted Satisfaction")
+        fig2 = px.line(forecast, x='ds', y='yhat', title="Forecasted Satisfaction", labels={'yhat': 'Forecasted Satisfaction'})
+        fig2.add_scatter(x=forecast['ds'], y=forecast['yhat_upper'], mode='lines', name='Upper Bound', line=dict(dash='dot'))
+        fig2.add_scatter(x=forecast['ds'], y=forecast['yhat_lower'], mode='lines', name='Lower Bound', line=dict(dash='dot'))
+        st.plotly_chart(fig2, use_container_width=True)
+
+        st.subheader("📋 Summary")
+        last_known = ts_df.iloc[-1]['y']
+        last_forecast = forecast.iloc[-periods:]['yhat'].mean()
+
+        if last_forecast > last_known:
+            trend = "increasing 📈"
+        elif last_forecast < last_known:
+            trend = "decreasing 📉"
+        else:
+            trend = "stable ➖"
+
+        st.success(f"The model forecasts that passenger satisfaction is **{trend}** over the next {periods} months.")
+    else:
+        st.info("👆 Please upload a CSV file to begin forecasting.")
 
 if __name__ == "__main__":
     forecast_dashboard()
- 
