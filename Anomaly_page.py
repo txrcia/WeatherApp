@@ -103,15 +103,18 @@ def anomaly_detection():
 
                 # Clean missing values
                 X_clean = X.dropna()
+                clean_indices = X_clean.index
 
                 if method == "Isolation Forest":
                     clf = IsolationForest(contamination=contamination, random_state=42)
-                    df['anomaly'] = clf.fit_predict(X_clean)
+                    preds = clf.fit_predict(X_clean)
+                    df['anomaly'] = 'Normal'
+                    df.loc[clean_indices, 'anomaly'] = pd.Series(preds, index=clean_indices)
                 else:
                     clf = LocalOutlierFactor(n_neighbors=20, contamination=contamination)
                     preds = clf.fit_predict(X_clean)
-                    df = df.loc[X_clean.index]  # align df with cleaned X
-                    df['anomaly'] = preds
+                    df = df.loc[clean_indices]  # align df with cleaned X
+                    df['anomaly'] = pd.Series(preds, index=clean_indices)
 
                 df['anomaly'] = df['anomaly'].map({1: 'Normal', -1: 'Anomaly'})
 
