@@ -61,6 +61,6 @@ elif current_page == "satisfaction":
 elif current_page == "segment":
     segment_page()
 elif current_page == "forecast":
-    anomaly_detection
+    anomaly_detection()
 elif current_page == "about":
     about_page()
