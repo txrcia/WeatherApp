@@ -1,7 +1,6 @@
 # streamlit_app.py
 
 import streamlit as st
-st.set_page_config(page_title="Passenger Satisfaction Forecast", layout="wide")
 
 import pandas as pd
 import plotly.express as px
