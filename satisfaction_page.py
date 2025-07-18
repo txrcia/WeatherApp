@@ -106,6 +106,17 @@ def satisfaction_prediction_page():
 
     st.markdown("<hr style='border: 0.5px solid #DDD;'>", unsafe_allow_html=True)
 
+      # NEW: Collapsible Info Box
+    with st.expander("ℹ️ How this works", expanded=False):
+        st.markdown("""
+        - This app predicts whether a passenger is likely to be **Satisfied** or **Neutral/Dissatisfied** based on their travel details.
+        - You can **manually enter inputs** for one passenger or **upload a CSV** file with multiple records.
+        - The model used is a Random Forest Classifier trained on airline passenger satisfaction data.
+        - After prediction, you’ll see the **result summary** and **feature importance** plot to understand key influences.
+        """)
+
+    st.markdown("<hr style='border: 0.5px solid #DDD;'>", unsafe_allow_html=True)
+
     # ------------------------------
     # Sidebar
     # ------------------------------
