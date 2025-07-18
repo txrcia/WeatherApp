@@ -32,6 +32,16 @@ def anomaly_detection():
         🛑 Airline Passenger Anomaly Detection
     </h1>
     """, unsafe_allow_html=True)
+
+    with st.expander("ℹ️ How this works", expanded=False):
+        st.markdown("""
+        - This tool detects **unusual passenger records** using anomaly detection.
+        - You can choose between **Isolation Forest** or **Local Outlier Factor** methods.
+        - Upload your CSV with passenger data to begin the analysis.
+        - Adjust the **Contamination slider** to control how strict the anomaly detection is.
+        """)
+
+
     st.markdown("Detect anomalies in passenger feedback using Isolation Forest or Local Outlier Factor.")
 
     uploaded_file = st.file_uploader("📂 Upload passenger satisfaction CSV", type=["csv"])

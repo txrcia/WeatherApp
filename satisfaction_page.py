@@ -104,8 +104,6 @@ def satisfaction_prediction_page():
     </h1>
     """, unsafe_allow_html=True)
 
-    st.markdown("<hr style='border: 0.5px solid #DDD;'>", unsafe_allow_html=True)
-
       # NEW: Collapsible Info Box
     with st.expander("ℹ️ How this works", expanded=False):
         st.markdown("""

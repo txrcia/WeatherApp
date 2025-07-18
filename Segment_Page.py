@@ -169,6 +169,14 @@ def segment_page():
     </h1>
     """, unsafe_allow_html=True)
 
+    with st.expander("ℹ️ How this works", expanded=False):
+        st.markdown("""
+        - This app predicts which segment or cluster a passenger belongs to.
+        - You can **manually enter** passenger details or **upload a CSV**.
+        - Clustering is done using KMeans, based on passenger demographics and preferences.
+        - You'll also see recommendations based on each cluster's weakest areas.
+        """)
+
     st.markdown("<hr style='border: 0.5px solid #DDD;'>", unsafe_allow_html=True)
 
     # Sidebar
