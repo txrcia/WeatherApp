@@ -6,7 +6,6 @@ def about_page():
     # Custom CSS to make the page look nicer (colors, layout, fonts, etc.)
     st.markdown("""
         <style>
-            /* Top banner with title and tagline */
             .about-hero {
                 background: linear-gradient(90deg, #6a11cb, #2575fc);
                 padding: 40px 20px;
@@ -25,8 +24,6 @@ def about_page():
                 margin-top: 8px;
                 opacity: 0.9;
             }
-
-            /* Sections that explain the app */
             .about-section {
                 background: #222;
                 padding: 25px;
@@ -41,8 +38,6 @@ def about_page():
                 font-size: 24px;
                 margin-bottom: 15px;
             }
-
-            /* Boxes that list features */
             .feature-box {
                 background: linear-gradient(90deg, #9c27b0, #673ab7);
                 padding: 15px;
@@ -57,8 +52,6 @@ def about_page():
                 margin-bottom: 8px;
                 font-size: 20px;
             }
-
-            /* Box for the vision/mission section */
             .vision-box {
                 background: linear-gradient(90deg, #ff9800, #ff5722);
                 padding: 20px;
@@ -76,7 +69,6 @@ def about_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # App name and short tagline at the top
     st.markdown("""
         <div class="about-hero">
             <h1>✈️ SkySatisfy</h1>
@@ -84,7 +76,6 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
-    # Short intro explaining what the app does and why it’s helpful
     st.markdown("""
         <div class="about-section">
             <p>
@@ -94,7 +85,6 @@ def about_page():
         </div>
     """, unsafe_allow_html=True)
 
-    # List of features and what they do
     st.markdown("""
         <div class="about-section">
             <h2>🚀 What SkySatisfy Offers</h2>
@@ -115,13 +105,12 @@ def about_page():
                 <p>Displays easy-to-understand charts and graphs to explore satisfaction trends.</p>
             </div>
             <div class="feature-box">
-                <h3>⚠️ Anomaly Detection</h3>
-                <p>Identifies unusual patterns in passenger data to uncover hidden issues or outliers that could affect satisfaction or operations.</p>
+                <h3>🚨 Anomaly Detection</h3>
+                <p>Uses AI models to identify unusual or suspicious passenger behavior or service patterns that may need attention.</p>
             </div>
         </div>
     """, unsafe_allow_html=True)
 
-    # Final box showing the app’s mission and vision
     st.markdown("""
         <div class="vision-box">
             <h2>🌐 Our Vision</h2>
