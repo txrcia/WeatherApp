@@ -54,3 +54,5 @@ def custom_navigation(pages):
 
     st.markdown(f'<div class="nav-container">{links}</div>', unsafe_allow_html=True)
     return current_page
+
+
