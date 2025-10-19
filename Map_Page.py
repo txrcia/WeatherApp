@@ -1,87 +1,132 @@
 import streamlit as st
-from openaq import OpenAQ
-import requests
 import pandas as pd
+import random
 import folium
+from folium.plugins import HeatMap
 from streamlit_folium import st_folium
-import time
+from streamlit.components.v1 import html
 
 def map_page():
         
-    st.title("🌤️ Air Quality & Heat Map")
+    dubai_coords = [
+    ("Downtown Dubai", 25.2048, 55.2708),
+    ("Jumeirah Beach", 25.2180, 55.2590),
+    ("Dubai Marina", 25.0800, 55.1433),
+    ("Deira", 25.2650, 55.3100),
+    ("Al Barsha", 25.1180, 55.2000),
+    ]
 
-    # --- 1. Get city input ---
-    city = st.text_input("Enter your city:", "Dubai") # have to get this specificly into the program
+    data = []
+    for name, lat, lon in dubai_coords:
+        data.append({
+            "location": name,
+            "latitude": lat,
+            "longitude": lon,
+            "parameter": "pm25",
+            "value": round(random.uniform(5, 60), 1)
+        })
+        data.append({
+            "location": name,
+            "latitude": lat,
+            "longitude": lon,
+            "parameter": "relativehumidity",
+            "value": round(random.uniform(20, 70), 1)
+        })
+        data.append({
+            "location": name,
+            "latitude": lat,
+            "longitude": lon,
+            "parameter": "temperature",
+            "value": round(random.uniform(25, 50), 1)
+        })
 
-    #coordinates of a point in Dubai = 25.1950, 55.2784. For radius use 400000.
+    df = pd.DataFrame(data)
 
-    # --- 2. Fetch Air Quality Data from OpenAQ ---
-    if city:
-        st.subheader(f"Air Quality in {city}")
-            
-        max_retries = 3
-        
-        # url and key to OpenAQ.
-        url = f"https://api.openaq.org/v3/locations/2178"
-        headers = {"X-API-Key": "66fc980b7a7981477c6349e5d284b1e25b167d1c56f2a61e134be355dd1f71ff"}
-
-
-        # this is to account for possible errors. Give the site 3 chances to get a new response
-        # if using OpenAQ function, i.e., client = OpenAQ(api_key=....), then remove this
-        #        as it does not work in the same way
-        for attempt in range(max_retries):
-            response = requests.get(url, headers=headers)
-            if response.status_code == 200:
-                data = response.json()
-                break
-            else:
-                st.info(f"Attempt {attempt+1} failed: {response.status_code}. Retrying...")
-                time.sleep(2)  # wait 2 seconds before retry
-        
-        if response.status_code == 200:
-            data = response.json()
-            results = data.get("results", [])
-            
-            if results:
-                # Prepare data for table and map
-                records = []
-                for item in results:
-                    loc = item['locality'] # locations is the tab in the document,
-                                            # however, locality is what mentions the place.
-                                            # locality gives country, so better to change it to 'name'
-                                            # 'name' gives state/city in our case.
-                    lat = item['coordinates']['latitude']
-                    lon = item['coordinates']['longitude']
-                    val = item.get("measurements", []) # this is a little confusing.
-                                                        # the documentation shows coverage under
-                                                        # measurements, which has a key called 
-                                                        # 'observedCount'. This key would help us get the
-                                                        # value. But I was not able to integrate it.
-                                                        # furthermore, there is a 'value' key
-                                                        # but I kept getting errors no matter what combination
-                                                        # I tried to get 'value' with. This might also
-                                                        # give the desired output.
-
-                    #measurements = {['parameter']}  # before testing this out, remove the dict brackets
-                    records.append({"Location": loc, "Latitude": lat, "Longitude": lon, "Measurements": val})
-                
-                df = pd.DataFrame(records)
-                st.dataframe(df)
-
-                # --- 3. Display Map ---
-                m = folium.Map(location=[df['Latitude'].mean(), df['Longitude'].mean()], zoom_start=12)
-                
-                for idx, row in df.iterrows():
-                    folium.Marker(
-                        location=[row['Latitude'], row['Longitude']],
-                        popup=f"{row['Location']}<br>PM2.5: {row.get('pm25', 'N/A')} µg/m³<br>PM10: {row.get('pm10', 'N/A')} µg/m³",
-                        icon=folium.Icon(color='red' if row.get('pm25', 0) > 50 else 'green')
-                    ).add_to(m)
-                
-                st_folium(m, width=700, height=500)
-                
-            else:
-                st.warning("No data available for this city.")
+    # ------------------------
+    # Add human-friendly labels
+    # ------------------------
+    def label_pm25(value):
+        if value <= 12:
+            return "Air quality is good"
+        elif value <= 35.4:
+            return "A mask would be nice"
+        elif value <= 55.4:
+            return "Avoid going out unless necessary"
         else:
-            st.error("Failed to fetch data after 3 attempts. Please try again later.")
-            data = {"results": []}  # fallback
+            return "Dangerous to go out"
+
+    def label_rh(value):
+        if value < 30:
+            return "It is dry outside"
+        elif value <= 50:
+            return "It is quite comfortable"
+        else:
+            return "Humidity level is very high"
+
+    def label_temp(value):
+        if 20 <= value <= 35:
+            return "Pleasant"
+        elif 35 < value <= 40:
+            return "Good day to go to the beach"
+        elif value <= 50:
+            return "Moderate temp"
+        else:
+            return "Way too hot, good day to sleep in"
+
+    def add_labels(row):
+        if row['parameter'] == 'pm25':
+            return label_pm25(row['value'])
+        elif row['parameter'] == 'relativehumidity':
+            return label_rh(row['value'])
+        elif row['parameter'] == 'temperature':
+            return label_temp(row['value'])
+        else:
+            return ""
+
+    df['label'] = df.apply(add_labels, axis=1)
+
+    # ------------------------
+    # Streamlit App
+    # ------------------------
+    st.title("Dubai Air Quality & Weather Map")
+
+    st.write("Interactive map showing PM2.5, Humidity, and Temperature levels in Dubai")
+
+
+
+    # ------------------------
+    # Filter PM2.5 data
+    # ------------------------
+    df_pm25 = df[df['parameter'] == 'pm25']
+
+
+
+    dubai_map = folium.Map(location=[25.1950, 55.2784], zoom_start=12)
+    heat_data = [[row['latitude'], row['longitude'], row['value']] for _, row in df_pm25.iterrows()]
+    HeatMap(heat_data, radius=25, blur=15, min_opacity=0.5).add_to(dubai_map)
+
+    # ------------------------
+    # Add markers with location + all labels
+    # ------------------------
+    locations = df['location'].unique()
+    for loc in locations:
+        subset = df[df['location'] == loc]
+        lat = subset['latitude'].iloc[0]
+        lon = subset['longitude'].iloc[0]
+
+        # Combine labels for popup
+        popup_text = f"<b>{loc}</b><br>"
+        for _, row in subset.iterrows():
+            popup_text += f"{row['label']}<br>"
+
+        folium.Marker(
+            location=[lat, lon],
+            popup=popup_text,
+            icon=folium.Icon(color='blue')
+        ).add_to(dubai_map)
+
+    # ------------------------
+    # Render stable map
+    # ------------------------
+    map_html = dubai_map._repr_html_()
+    html(map_html, height=500, width=900)
