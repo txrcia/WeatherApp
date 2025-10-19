@@ -5,48 +5,48 @@ def custom_navigation(pages):
     <style>
     .nav-container {
         display: flex;
-        justify-content: center;
-        background: linear-gradient(90deg, purple, navy);
+        justify-content: space-around;  /* evenly spread the links */
+        background-color: #4A90E2;  /* navbar background */
         padding: 14px 25px;
         border-radius: 10px;
-        margin-bottom: 25px;
+        margin: 10px auto 30px auto;  /* reduce top margin to bring navbar closer */
+        width: 100%;
         box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
 
     .nav-item {
         margin: 0 18px;
         padding: 10px 24px;
-        color: #ffffffcc;
+        color: #ffffff !important;  /* white text */
         text-decoration: none !important;
         border-radius: 8px;
         font-weight: 700;
-        font-size: 15px;
+        font-size: 20px;
         transition: all 0.3s ease;
         cursor: pointer;
         border: 2px solid transparent;
+        background-color: transparent;
     }
 
     .nav-item:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-        color: #ffffff;
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        border-color: #ffffff55;
-        text-decoration: none !important;
+        border: 2px solid #ffffff;  /* white border on hover */
+        color: #ffffff !important;
     }
 
     .nav-item.active {
-        background-color: #ffffff;
-        color: purple !important;
+        border: 2px solid #ffffff;  /* border for active page */
+        color: #ffffff !important;  /* active page text stays white */
         font-weight: 800;
-        border-color: #ffffff;
-        text-decoration: none !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
+    # Get current page from query params
     query_params = st.query_params
-    current_page = query_params.get("page", list(pages.keys())[0])
+    current_page_list = query_params.get("page", [list(pages.keys())[0]])
+    current_page = current_page_list[0] if isinstance(current_page_list, list) else current_page_list
 
+    # Build links
     links = ""
     for key, label in pages.items():
         active = "active" if current_page == key else ""

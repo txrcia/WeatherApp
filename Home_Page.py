@@ -1,137 +1,88 @@
 import streamlit as st
 
 def home_page():
-
     st.markdown(
         """
         <style>
-            .hero {
-                background: linear-gradient(90deg, #6a11cb, #2575fc);
-                color: white;
-                padding: 30px 15px;
-                border-radius: 10px;
-                text-align: center;
-                margin-bottom: 30px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            /* Wider container for a full-page look */
+            .block-container {
+                max-width: 95% !important;
+                padding-left: 2rem;
+                padding-right: 2rem;
             }
-            .hero h1 {
-                font-size: 40px;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
+
             .hero p {
-                font-size: 16px;
+                font-size: 17px;
                 margin-top: 10px;
-                opacity: 0.9;
+                opacity: 0.95;
             }
-            .cta-button {
-                background-color: white;
-                color: #6a11cb;
-                font-weight: bold;
-                padding: 8px 16px;
-                font-size: 14px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                text-decoration: none;
-            }
-            .cta-button:hover {
-                background-color: #ddd;
-            }
-            .feature-card {
-                background-color: #222;
-                color: white;
-                padding: 15px;
-                border-radius: 8px;
-                height: 100%;
-                transition: transform 0.2s;
+
+            /* INFO + FEATURE BOXES */
+            .info-box, .feature-card {
+                background-color: #a9d6e5; /* bluish-grey */
+                color: black;
+                padding: 18px;
+                border-radius: 10px;
+                box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+                margin-bottom: 18px;
                 font-size: 15px;
-                line-height: 1.4;
+                line-height: 1.6;
+                transition: transform 0.2s ease, box-shadow 0.3s ease;
             }
-            .feature-card:hover {
+
+            .info-box:hover, .feature-card:hover {
                 transform: scale(1.02);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.45);
             }
+
+            /* FEATURE CARD TEXT */
+            .feature-card {
+                height: 100%;
+                text-align: left;
+            }
+
             .feature-title {
                 font-size: 18px;
                 font-weight: bold;
-                margin-bottom: 8px;
-                color: #9c27b0;
+                margin-bottom: 10px;
+                color: #333333; /* darker text for contrast */
             }
-            .about-box {
-                background-color: #333;
-                color: white;
-                padding: 20px;
-                border-radius: 10px;
-                margin-top: 20px;
-                font-size: 15px;
-                line-height: 1.5;
-            }
-            .purple-black-box {
-                background: linear-gradient(90deg, purple, black);
-                color: white;
-                padding: 15px;
-                border-radius: 10px;
-                margin-bottom: 15px;
-                font-size: 15px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            }
-            .blue-black-box {
-                background: linear-gradient(90deg, royalblue, black);
-                color: white;
-                padding: 15px;
-                border-radius: 10px;
-                margin-bottom: 15px;
-                font-size: 15px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+            /* SECTION HEADINGS */
+            h2 {
+                color: #2c3e50;
+                font-size: 28px;
+                font-weight: 700;
+                margin-top: 30px;
+                margin-bottom: 20px;
+                padding-bottom: 6px;
             }
         </style>
         """,
         unsafe_allow_html=True
     )
 
+    # PROBLEM STATEMENT
     st.markdown("""
-    <div class="hero">
-        <h1>✈️ SkySatisfy</h1>
-        <p>
-            Your AI co-pilot for passenger satisfaction. Analyze, predict, and improve airline services with data-driven insights.
-        </p>
+    <div style="margin-top: 30px; margin-bottom: 0;">
+        <h4 style="line-height: 1.5;">
+            Urban air pollution and heat islands pose significant risks to health and comfort.
+            Many citizens lack access to real-time air quality insights, leading to unawareness of hazardous conditions.
+            <strong>Haze</strong> empowers individuals and authorities with actionable, real-time environmental intelligence.
+        </h4>
     </div>
     """, unsafe_allow_html=True)
 
-    # SHORT ABOUT SECTION
-    st.markdown("""
-        <div class="about-box">
-            <p>
-                SkySatisfy is an AI-powered platform designed for airlines to gain deep insights into passenger behavior and satisfaction.
-                From clustering passengers into meaningful groups, to predicting satisfaction levels, and pinpointing services that need improvement — SkySatisfy turns your data into actionable strategies.
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("---")
 
     # FEATURES SECTION
-    st.markdown("## ✨ Core Features")
+    st.markdown("## Key Features")
 
-    cols = st.columns(4)  
+    cols = st.columns(4)
     features = [
-        {
-            "title": "AI Passenger Clustering",
-            "desc": "Group passengers into insightful clusters for personalized services and targeted loyalty programs."
-        },
-        {
-            "title": "Satisfaction Prediction",
-            "desc": "Predict if a passenger will be satisfied or not — enabling proactive engagement to boost loyalty."
-        },
-        {
-            "title": "Anomaly Detection",
-            "desc": "Detect unusual satisfaction patterns or service anomalies for proactive investigation and resolution."
-        },
-        {
-            "title": "Interactive Dashboards",
-            "desc": "Visualize insights in stunning charts and dashboards to quickly spot trends and service gaps."
-        },
-        
+        {"title": "Live Pollution Maps", "desc": "Visualize real-time AQI levels and stay away from high-risk zones."},
+        {"title": "Urban Heat Alerts", "desc": "Monitor temperature anomalies and identify heat islands instantly."},
+        {"title": "AI-Based Forecasting", "desc": "Predict upcoming pollution surges and take preventive actions."},
+        {"title": "Insightful Dashboards", "desc": "Analyze air quality trends with interactive data visualizations."}
     ]
 
     for col, feature in zip(cols, features):
@@ -147,19 +98,19 @@ def home_page():
 
     st.markdown("---")
 
-    # HOW IT WORKS 
-    st.markdown("## ⚙️ How SkySatisfy Works")
+    # HOW IT WORKS
+    st.markdown("## How Haze Works")
 
     steps = [
-        "Upload your passenger data (CSV or manual inputs).",
-        "Run the AI segmentation and prediction models.",
-        "Explore recommendations and interactive visualizations."
+        "Collects real-time weather and pollution data from IoT sensors and APIs.",
+        "Processes and predicts environmental risks using AI and statistical models.",
+        "Provides personalized alerts, maps, and dashboards for users and authorities."
     ]
 
     for i, step in enumerate(steps, start=1):
         st.markdown(
             f"""
-            <div class="blue-black-box">
+            <div class="info-box">
                 <strong>Step {i}:</strong> {step}
             </div>
             """,
@@ -168,20 +119,20 @@ def home_page():
 
     st.markdown("---")
 
-   
-    st.markdown("## 🎯 Why Airlines Choose SkySatisfy")
+    # BENEFITS
+    st.markdown("## Why Choose Haze")
 
     benefits = [
-        "Increase passenger loyalty and satisfaction.",
-        "Identify and improve service gaps efficiently.",
-        "Make fast, data-driven decisions to stay ahead of competitors."
+        "Get timely alerts for pollution and heat risks.",
+        "Plan daily routines safely with reliable insights.",
+        "Support smart city initiatives through data transparency."
     ]
 
     for benefit in benefits:
         st.markdown(
             f"""
-            <div class="purple-black-box">
-                ✅ {benefit}
+            <div class="info-box">
+                {benefit}
             </div>
             """,
             unsafe_allow_html=True
@@ -189,14 +140,13 @@ def home_page():
 
     st.markdown("---")
 
-    # ABOUT BOX
+    # ABOUT
+    st.markdown("## About Haze")
     st.markdown("""
-        <div class="about-box">
-            <h3>ℹ️ About SkySatisfy</h3>
-            <p>
-                SkySatisfy combines powerful machine learning with beautiful data visualizations to help airlines unlock passenger insights like never before.
-                From clustering and satisfaction prediction to tailored service recommendations, SkySatisfy empowers airlines to enhance customer experience and boost revenue.
-            </p>
+        <div class="info-box">
+            Haze blends AI, IoT, and weather science to provide a unified view of urban air health.
+            Its intuitive design and predictive intelligence empower both citizens and policymakers to
+            make informed, health-conscious decisions every day.
         </div>
     """, unsafe_allow_html=True)
 
