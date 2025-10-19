@@ -1,5 +1,7 @@
 streamlit
 folium
+streamlit_folium
 pandas
 numpy
-# add any other libraries your app uses
+matplotlib
+scikit-learn
